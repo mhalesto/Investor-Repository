@@ -385,8 +385,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--i
   border-radius: 14px;
   width: min(660px, calc(100vw - 32px));
   max-width: none;
-  max-height: calc(100vh - 32px);
-  overflow-y: auto;
   box-shadow: 0 24px 72px rgba(24,35,46,0.22);
   animation: mIn 0.2s ease;
 }
@@ -866,34 +864,27 @@ function placeModal(anchorEl) {
   const modalRect = modal.getBoundingClientRect();
   const gap = 14;
   const sidePad = 16;
-  const lift = 96;
-  const catalogRect = document.getElementById('catalog').getBoundingClientRect();
   const viewportLeft = window.scrollX;
   const viewportTop = window.scrollY;
   const viewportRight = viewportLeft + document.documentElement.clientWidth;
   const viewportBottom = viewportTop + window.innerHeight;
 
   let left = anchorRect.left + window.scrollX + (anchorRect.width / 2) - (modalRect.width / 2);
-  const minLeft = Math.max(sidePad + viewportLeft, catalogRect.left + window.scrollX + sidePad);
-  const maxLeft = Math.min(
-    viewportRight - modalRect.width - sidePad,
-    catalogRect.right + window.scrollX - modalRect.width - sidePad
-  );
-  left = Math.max(minLeft, Math.min(left, Math.max(minLeft, maxLeft)));
+  left = Math.max(sidePad + viewportLeft, Math.min(left, viewportRight - modalRect.width - sidePad));
 
   const belowTop = anchorRect.bottom + window.scrollY + gap;
   const aboveTop = anchorRect.top + window.scrollY - modalRect.height - gap;
   const fitsBelow = belowTop + modalRect.height <= viewportBottom - sidePad;
   const fitsAbove = aboveTop >= viewportTop + sidePad;
-  const minTop = viewportTop + sidePad;
-  const maxTop = Math.min(viewportBottom - modalRect.height - sidePad, pageHeight() - modalRect.height - sidePad);
 
-  let top = belowTop - lift;
+  let top = belowTop;
   if (!fitsBelow && fitsAbove) top = aboveTop;
   if (!fitsBelow && !fitsAbove) {
-    top = anchorRect.top + window.scrollY - lift;
+    top = Math.max(viewportTop + sidePad, anchorRect.top + window.scrollY - 32);
   }
-  top = Math.max(minTop, Math.min(top, maxTop));
+
+  const docBottom = pageHeight() - modalRect.height - sidePad;
+  top = Math.max(sidePad, Math.min(top, docBottom));
 
   modal.style.left = `${Math.round(left)}px`;
   modal.style.top = `${Math.round(top)}px`;
@@ -962,10 +953,7 @@ function openModal(inv, anchorEl) {
   modalAnchor = anchorEl || null;
   document.getElementById('modalOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
-  requestAnimationFrame(() => {
-    document.querySelector('.modal').scrollTop = 0;
-    placeModal(modalAnchor);
-  });
+  requestAnimationFrame(() => placeModal(modalAnchor));
 }
 function closeModal() {
   document.getElementById('modalOverlay').classList.remove('open');
