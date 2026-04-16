@@ -381,28 +381,24 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--i
 /* ===== MODAL ===== */
 .modal-overlay {
   display: none;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
+  position: fixed; inset: 0;
   background: rgba(24,35,46,0.65);
   z-index: 500;
   backdrop-filter: blur(3px);
-  overflow: hidden;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 32px 16px;
+  overflow-y: auto;
 }
-.modal-overlay.open { display: block; }
+.modal-overlay.open { display: flex; }
 .modal {
-  position: absolute;
-  top: 0;
-  left: 0;
   background: white;
   border-radius: 14px;
-  width: min(660px, calc(100vw - 32px));
-  max-width: none;
-  max-height: calc(100vh - 32px);
-  overflow-y: auto;
+  width: 100%; max-width: 660px;
   box-shadow: 0 24px 72px rgba(24,35,46,0.22);
   animation: mIn 0.2s ease;
+  flex-shrink: 0;
+  align-self: flex-start;
 }
 @keyframes mIn {
   from { opacity: 0; transform: translateY(-12px) scale(0.97); }
@@ -1070,74 +1066,12 @@ function buildTile(inv, idx) {
       <span class="tile-arrow">View →</span>
     </div>`;
 
-  tile.onclick = () => openModal(inv, tile);
+  tile.onclick = () => openModal(inv);
   return tile;
 }
 
 // ===== MODAL =====
-let modalAnchor = null;
-
-function pageHeight() {
-  return Math.max(
-    document.body.scrollHeight,
-    document.documentElement.scrollHeight,
-    document.body.offsetHeight,
-    document.documentElement.offsetHeight,
-    document.body.clientHeight,
-    document.documentElement.clientHeight
-  );
-}
-
-function placeModal(anchorEl) {
-  const overlay = document.getElementById('modalOverlay');
-  const modal = overlay.querySelector('.modal');
-  if (!overlay.classList.contains('open') || !anchorEl) return;
-
-  overlay.style.height = `${pageHeight()}px`;
-
-  modal.style.visibility = 'hidden';
-  modal.style.top = '0px';
-  modal.style.left = '0px';
-
-  const anchorRect = anchorEl.getBoundingClientRect();
-  const modalRect = modal.getBoundingClientRect();
-  const gap = 14;
-  const sidePad = 16;
-  const lift = 96;
-  const catalogRect = document.getElementById('catalog').getBoundingClientRect();
-  const viewportLeft = window.scrollX;
-  const viewportTop = window.scrollY;
-  const viewportRight = viewportLeft + document.documentElement.clientWidth;
-  const viewportBottom = viewportTop + window.innerHeight;
-
-  let left = anchorRect.left + window.scrollX + (anchorRect.width / 2) - (modalRect.width / 2);
-  const minLeft = Math.max(sidePad + viewportLeft, catalogRect.left + window.scrollX + sidePad);
-  const maxLeft = Math.min(
-    viewportRight - modalRect.width - sidePad,
-    catalogRect.right + window.scrollX - modalRect.width - sidePad
-  );
-  left = Math.max(minLeft, Math.min(left, Math.max(minLeft, maxLeft)));
-
-  const belowTop = anchorRect.bottom + window.scrollY + gap;
-  const aboveTop = anchorRect.top + window.scrollY - modalRect.height - gap;
-  const fitsBelow = belowTop + modalRect.height <= viewportBottom - sidePad;
-  const fitsAbove = aboveTop >= viewportTop + sidePad;
-  const minTop = viewportTop + sidePad;
-  const maxTop = Math.min(viewportBottom - modalRect.height - sidePad, pageHeight() - modalRect.height - sidePad);
-
-  let top = belowTop - lift;
-  if (!fitsBelow && fitsAbove) top = aboveTop;
-  if (!fitsBelow && !fitsAbove) {
-    top = anchorRect.top + window.scrollY - lift;
-  }
-  top = Math.max(minTop, Math.min(top, maxTop));
-
-  modal.style.left = `${Math.round(left)}px`;
-  modal.style.top = `${Math.round(top)}px`;
-  modal.style.visibility = '';
-}
-
-function openModal(inv, anchorEl) {
+function openModal(inv) {
   const mSec = matchedSecs(inv);
   const wPct = inv.deals > 0 ? Math.round((inv.women / inv.deals) * 100) : 0;
   const isImpact = IMPACT_SET.has(inv.n.toLowerCase());
@@ -1195,19 +1129,12 @@ function openModal(inv, anchorEl) {
   footer += `<button class="btn-ghost" onclick="closeModal()">Close</button>`;
   document.getElementById('mFooter').innerHTML = footer;
 
-  modalAnchor = anchorEl || null;
   document.getElementById('modalOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
-  requestAnimationFrame(() => {
-    document.querySelector('.modal').scrollTop = 0;
-    placeModal(modalAnchor);
-  });
 }
 function closeModal() {
   document.getElementById('modalOverlay').classList.remove('open');
-  document.getElementById('modalOverlay').style.height = '';
   document.body.style.overflow = '';
-  modalAnchor = null;
 }
 
 // ===== EVENTS =====
@@ -1215,7 +1142,6 @@ document.getElementById('searchInput').oninput = e => { state.search = e.target.
 document.getElementById('modalClose').onclick = closeModal;
 document.getElementById('modalOverlay').onclick = e => { if (e.target === e.currentTarget) closeModal(); };
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-window.addEventListener('resize', () => { if (modalAnchor) placeModal(modalAnchor); });
 
 function clearAll() {
   state.search = ''; state.sectors.clear(); state.country = ''; state.women = false; state.impact = false;

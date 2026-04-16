@@ -1199,7 +1199,7 @@ function openModal(inv, anchorEl) {
   document.getElementById('modalOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
   requestAnimationFrame(() => {
-    document.querySelector('.modal').scrollTop = 0;
+    document.querySelector('#modalOverlay .modal').scrollTop = 0;
     placeModal(modalAnchor);
   });
 }
@@ -1325,11 +1325,34 @@ function openRequestUpdate(fundName, fundWeb) {
   }
   // Close the investor modal first, then open update modal
   document.getElementById('modalOverlay').classList.remove('open');
-  document.getElementById('requestUpdateOverlay').classList.add('open');
+  document.getElementById('modalOverlay').style.height = '';
+  modalAnchor = null;
+  const ruOverlay = document.getElementById('requestUpdateOverlay');
+  ruOverlay.classList.add('open');
+  // Position the request update modal centred in viewport
+  const ruModal = ruOverlay.querySelector('.modal');
+  ruOverlay.style.position = 'fixed';
+  ruOverlay.style.inset = '0';
+  ruOverlay.style.width = '';
+  ruOverlay.style.height = '';
+  ruOverlay.style.display = 'flex';
+  ruOverlay.style.alignItems = 'flex-start';
+  ruOverlay.style.justifyContent = 'center';
+  ruOverlay.style.padding = '32px 16px';
+  ruOverlay.style.overflowY = 'auto';
+  if (ruModal) {
+    ruModal.style.position = 'relative';
+    ruModal.style.top = '';
+    ruModal.style.left = '';
+    ruModal.style.visibility = '';
+    ruModal.style.maxHeight = '';
+  }
   document.body.style.overflow = 'hidden';
 }
 function closeRequestUpdate() {
-  document.getElementById('requestUpdateOverlay').classList.remove('open');
+  const ruOverlay = document.getElementById('requestUpdateOverlay');
+  ruOverlay.classList.remove('open');
+  ruOverlay.removeAttribute('style');
   document.body.style.overflow = '';
 }
 function submitRequestUpdate() {
@@ -1373,11 +1396,31 @@ document.addEventListener('click', e => {
 
 // ===== SUBMIT FUND MODAL =====
 function openSubmitModal() {
-  document.getElementById('submitModalOverlay').classList.add('open');
+  const ov = document.getElementById('submitModalOverlay');
+  ov.classList.add('open');
+  ov.style.position = 'fixed';
+  ov.style.inset = '0';
+  ov.style.width = '';
+  ov.style.height = '';
+  ov.style.display = 'flex';
+  ov.style.alignItems = 'flex-start';
+  ov.style.justifyContent = 'center';
+  ov.style.padding = '32px 16px';
+  ov.style.overflowY = 'auto';
+  const modal = ov.querySelector('.modal');
+  if (modal) {
+    modal.style.position = 'relative';
+    modal.style.top = '';
+    modal.style.left = '';
+    modal.style.visibility = '';
+    modal.style.maxHeight = '';
+  }
   document.body.style.overflow = 'hidden';
 }
 function closeSubmitModal() {
-  document.getElementById('submitModalOverlay').classList.remove('open');
+  const ov = document.getElementById('submitModalOverlay');
+  ov.classList.remove('open');
+  ov.removeAttribute('style');
   document.body.style.overflow = '';
   // reset form
   const fields = ['sf-name','sf-type','sf-hq','sf-countries','sf-website','sf-desc','sf-submitter-name','sf-submitter-email'];
