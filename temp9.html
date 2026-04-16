@@ -1076,7 +1076,6 @@ function buildTile(inv, idx) {
 
 // ===== MODAL =====
 let modalAnchor = null;
-let requestUpdateAnchor = null;
 
 function pageHeight() {
   return Math.max(
@@ -1089,18 +1088,18 @@ function pageHeight() {
   );
 }
 
-function placePageModal(overlay, anchorEl) {
+function placeModal(anchorEl) {
+  const overlay = document.getElementById('modalOverlay');
   const modal = overlay.querySelector('.modal');
-  if (!overlay.classList.contains('open') || !modal) return;
+  if (!overlay.classList.contains('open') || !anchorEl) return;
 
   overlay.style.height = `${pageHeight()}px`;
 
   modal.style.visibility = 'hidden';
-  modal.style.position = 'absolute';
   modal.style.top = '0px';
   modal.style.left = '0px';
-  modal.style.maxHeight = '';
 
+  const anchorRect = anchorEl.getBoundingClientRect();
   const modalRect = modal.getBoundingClientRect();
   const gap = 14;
   const sidePad = 16;
@@ -1110,16 +1109,6 @@ function placePageModal(overlay, anchorEl) {
   const viewportTop = window.scrollY;
   const viewportRight = viewportLeft + document.documentElement.clientWidth;
   const viewportBottom = viewportTop + window.innerHeight;
-  const anchorRect = anchorEl
-    ? anchorEl.getBoundingClientRect()
-    : {
-        left: sidePad,
-        right: document.documentElement.clientWidth - sidePad,
-        width: document.documentElement.clientWidth - (sidePad * 2),
-        top: sidePad,
-        bottom: sidePad,
-        height: 0
-      };
 
   let left = anchorRect.left + window.scrollX + (anchorRect.width / 2) - (modalRect.width / 2);
   const minLeft = Math.max(sidePad + viewportLeft, catalogRect.left + window.scrollX + sidePad);
@@ -1137,7 +1126,6 @@ function placePageModal(overlay, anchorEl) {
   const maxTop = Math.min(viewportBottom - modalRect.height - sidePad, pageHeight() - modalRect.height - sidePad);
 
   let top = belowTop - lift;
-  if (!anchorEl) top = viewportTop + sidePad;
   if (!fitsBelow && fitsAbove) top = aboveTop;
   if (!fitsBelow && !fitsAbove) {
     top = anchorRect.top + window.scrollY - lift;
@@ -1147,14 +1135,6 @@ function placePageModal(overlay, anchorEl) {
   modal.style.left = `${Math.round(left)}px`;
   modal.style.top = `${Math.round(top)}px`;
   modal.style.visibility = '';
-}
-
-function placeModal(anchorEl) {
-  placePageModal(document.getElementById('modalOverlay'), anchorEl);
-}
-
-function placeRequestUpdateModal(anchorEl) {
-  placePageModal(document.getElementById('requestUpdateOverlay'), anchorEl);
 }
 
 function openModal(inv, anchorEl) {
@@ -1235,10 +1215,7 @@ document.getElementById('searchInput').oninput = e => { state.search = e.target.
 document.getElementById('modalClose').onclick = closeModal;
 document.getElementById('modalOverlay').onclick = e => { if (e.target === e.currentTarget) closeModal(); };
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-window.addEventListener('resize', () => {
-  if (modalAnchor) placeModal(modalAnchor);
-  if (requestUpdateAnchor) placeRequestUpdateModal(requestUpdateAnchor);
-});
+window.addEventListener('resize', () => { if (modalAnchor) placeModal(modalAnchor); });
 
 function clearAll() {
   state.search = ''; state.sectors.clear(); state.country = ''; state.women = false; state.impact = false;
@@ -1322,7 +1299,6 @@ document.addEventListener('click', e => {
 let _ruFundName = '';
 function openRequestUpdate(fundName, fundWeb) {
   _ruFundName = fundName;
-  requestUpdateAnchor = modalAnchor;
   document.getElementById('ruFundName').textContent = 'Request Update: ' + fundName;
   // Reset form
   ['ru-firstname','ru-lastname','ru-email','ru-update'].forEach(id => {
@@ -1350,24 +1326,33 @@ function openRequestUpdate(fundName, fundWeb) {
   // Close the investor modal first, then open update modal
   document.getElementById('modalOverlay').classList.remove('open');
   document.getElementById('modalOverlay').style.height = '';
+  modalAnchor = null;
   const ruOverlay = document.getElementById('requestUpdateOverlay');
   ruOverlay.classList.add('open');
-  modalAnchor = null;
-  ruOverlay.removeAttribute('style');
+  // Position the request update modal centred in viewport
   const ruModal = ruOverlay.querySelector('.modal');
+  ruOverlay.style.position = 'fixed';
+  ruOverlay.style.inset = '0';
+  ruOverlay.style.width = '';
+  ruOverlay.style.height = '';
+  ruOverlay.style.display = 'flex';
+  ruOverlay.style.alignItems = 'flex-start';
+  ruOverlay.style.justifyContent = 'center';
+  ruOverlay.style.padding = '32px 16px';
+  ruOverlay.style.overflowY = 'auto';
   if (ruModal) {
-    ruModal.scrollTop = 0;
+    ruModal.style.position = 'relative';
+    ruModal.style.top = '';
+    ruModal.style.left = '';
+    ruModal.style.visibility = '';
+    ruModal.style.maxHeight = '';
   }
   document.body.style.overflow = 'hidden';
-  requestAnimationFrame(() => {
-    placeRequestUpdateModal(requestUpdateAnchor);
-  });
 }
 function closeRequestUpdate() {
   const ruOverlay = document.getElementById('requestUpdateOverlay');
   ruOverlay.classList.remove('open');
   ruOverlay.removeAttribute('style');
-  requestUpdateAnchor = null;
   document.body.style.overflow = '';
 }
 function submitRequestUpdate() {
