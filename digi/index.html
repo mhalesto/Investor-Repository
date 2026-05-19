@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>DCA — Venture Debt Toolkit</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1B3A0F;--nml:#2D5A18;--gold:#C8860A;--glt:#F5C870;--gpa:#FDF7E8;--gbr:#F5E6C0;--teal:#0B6E6E;--tlg:#138080;--tpa:#E5F5F5;--tbr:#9ACECE;--cream:#F8F5EE;--wh:#fff;--ink:#1A1A14;--inm:#3A3A30;--inmu:#6B6B5E;--bdr:#D8D4C8;--grn:#4A8A28;--gpa2:#EDF5E7;--red:#C0392B;--rpa:#FDECEA;--sw:252px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"DM Sans",sans-serif;background:var(--cream);color:var(--ink);font-size:15px;line-height:1.65;display:flex;min-height:100vh}
+.sb{width:var(--sw);background:var(--navy);position:fixed;top:0;left:0;height:100vh;overflow-y:auto;z-index:100;display:flex;flex-direction:column;padding-bottom:2rem}
+.sb::-webkit-scrollbar{width:3px}.sb::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15)}
+.sblogo{padding:1.2rem 1.2rem .9rem;border-bottom:1px solid rgba(255,255,255,.1)}
+.sblogo-title{font-family:"Cormorant Garamond",serif;font-size:18px;color:#fff;font-weight:600;margin-bottom:2px}
+.sblogo-sub{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--glt)}
+nav{padding:.5rem 0;flex:1}
+.ng{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);padding:.8rem 1.2rem .25rem;font-weight:500}
+.ni{display:flex;align-items:center;gap:8px;padding:.48rem 1.2rem;cursor:pointer;color:rgba(255,255,255,.6);font-size:12.5px;border-left:2px solid transparent;transition:all .15s;background:none;border-right:none;border-top:none;border-bottom:none;width:100%;text-align:left;font-family:"DM Sans",sans-serif;line-height:1.35}
+.ni:hover{color:#fff;background:rgba(255,255,255,.05)}.ni.active{color:#fff;border-left-color:var(--gold);background:rgba(255,255,255,.07);font-weight:500}
+.sbfoot{padding:.8rem 1.2rem;border-top:1px solid rgba(255,255,255,.08);font-size:9.5px;color:rgba(255,255,255,.25);line-height:1.5}
+.sbfoot strong{color:rgba(255,255,255,.4);display:block;margin-bottom:2px}
+main{margin-left:var(--sw);flex:1}
+.sec{display:none}.sec.active{display:block}
+.topbar{background:var(--wh);border-bottom:1px solid var(--bdr);padding:.6rem 2.5rem;position:sticky;top:0;z-index:50;font-family:"Cormorant Garamond",serif;font-size:15px;font-weight:600;color:var(--navy)}
+.hero{background:var(--navy);padding:2.5rem 2.5rem 2rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:0;right:0;width:450px;height:450px;background:radial-gradient(ellipse at top right,rgba(201,144,12,.1) 0%,transparent 65%);pointer-events:none}
+.hero-ey{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--glt);margin-bottom:.75rem;font-weight:500;position:relative;z-index:1}
+.hero-t{font-family:"Cormorant Garamond",serif;font-size:38px;font-weight:600;color:#fff;line-height:1.15;margin-bottom:.9rem;position:relative;z-index:1;max-width:640px}
+.hero-t span{color:var(--glt)}
+.hero-b{font-size:14px;color:rgba(255,255,255,.6);max-width:560px;position:relative;z-index:1;line-height:1.75;margin-bottom:1.25rem}
+.tags{display:flex;gap:7px;flex-wrap:wrap;position:relative;z-index:1}
+.tag{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500}
+.tg{background:rgba(201,144,12,.2);color:var(--glt);border:1px solid rgba(201,144,12,.3)}
+.tb{background:rgba(255,255,255,.08);color:rgba(255,255,255,.65);border:1px solid rgba(255,255,255,.12)}
+.tt{background:rgba(11,110,110,.3);color:#7BE0E0;border:1px solid rgba(11,110,110,.4)}
+.ca{padding:1.75rem 2.5rem;max-width:920px}
+h2.st{font-family:"Cormorant Garamond",serif;font-size:28px;font-weight:600;color:var(--navy);margin-bottom:.35rem}
+.sl{font-size:13.5px;color:var(--inmu);margin-bottom:1.5rem;max-width:660px;line-height:1.7}
+h3.sh{font-size:14.5px;font-weight:600;color:var(--ink);margin:1.5rem 0 .6rem}
+p{color:var(--inm);margin-bottom:.85rem}
+.div{height:1px;background:var(--bdr);margin:1.5rem 0}
+.sr{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem;margin-bottom:1.25rem}
+.sc{background:var(--wh);border:1px solid var(--bdr);border-radius:9px;padding:1rem}
+.sn{font-family:"Cormorant Garamond",serif;font-size:30px;font-weight:600;line-height:1;margin-bottom:3px}
+.sn.n{color:var(--navy)}.sn.g{color:var(--gold)}.sn.t{color:var(--teal)}
+.sl2{font-size:11.5px;color:var(--inmu)}
+.cg{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.9rem;margin-bottom:1.25rem}
+.cd{background:var(--wh);border:1px solid var(--bdr);border-radius:10px;padding:1.15rem}
+.cd.cn{border-left:3px solid var(--nml)}.cd.cg2{border-left:3px solid var(--gold);background:var(--gpa)}
+.cd.ct{border-left:3px solid var(--teal);background:var(--tpa)}.cd.cr{border-left:3px solid var(--red);background:var(--rpa)}
+.cdh{display:flex;align-items:flex-start;gap:9px;margin-bottom:.5rem}
+.ci{width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.cin{background:#EEF2FF}.cit{background:var(--tpa)}.cig{background:var(--gpa)}.cir{background:var(--rpa)}
+.ct2{font-weight:600;font-size:13px;color:var(--ink);margin-bottom:1px}
+.cb{font-size:13px;color:var(--inmu);line-height:1.6}
+.co{border-radius:0 8px 8px 0;padding:.85rem 1rem;margin-bottom:.9rem;font-size:13px;line-height:1.65}
+.co.cn{background:#EEF2FF;border-left:3px solid var(--nml);color:var(--navy)}
+.co.cg2{background:var(--gpa);border-left:3px solid var(--gold);color:#6B4A00}
+.co.ct{background:var(--tpa);border-left:3px solid var(--teal);color:#0A4040}
+.co.cr{background:var(--rpa);border-left:3px solid var(--red);color:var(--red)}
+.co.cg3{background:var(--gpa2);border-left:3px solid var(--grn);color:#0A3A1A}
+.tw{overflow-x:auto;margin-bottom:1.25rem}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{background:var(--navy);color:#fff;padding:8px 11px;text-align:left;font-weight:500;font-size:11.5px}
+th:first-child{border-radius:8px 0 0 0}th:last-child{border-radius:0 8px 0 0}
+td{padding:8px 11px;border-bottom:1px solid var(--bdr);color:var(--inm);vertical-align:top}
+tr:last-child td{border-bottom:none}tr:nth-child(even) td{background:#FAFAFA}
+.tdl{font-weight:600;color:var(--ink)}.tdg{color:var(--grn);font-weight:600}.tdb{color:var(--red);font-weight:600}.tdn{color:#C8860A;font-weight:600}
+.ai{background:var(--wh);border:1px solid var(--bdr);border-radius:9px;margin-bottom:6px;overflow:hidden}
+.ah{padding:.85rem 1rem;cursor:pointer;display:flex;align-items:flex-start;justify-content:space-between;gap:9px;transition:background .15s}
+.ah:hover{background:var(--cream)}
+.at{font-size:9px;font-weight:500;letter-spacing:.08em;color:var(--gold);text-transform:uppercase;margin-bottom:2px}
+.am{font-size:13px;font-weight:500;color:var(--ink);line-height:1.4}
+.ac{color:#9CA3AF;font-size:10px;min-width:12px;text-align:center;margin-top:3px;transition:transform .2s}
+.ai.open .ac{transform:rotate(180deg)}
+.ab{display:none;padding:0 1rem .9rem;border-top:1px solid var(--bdr)}
+.ai.open .ab{display:block}
+.ab p{font-size:13px;color:var(--inmu);line-height:1.7;margin-top:.85rem}
+.chl{list-style:none;margin-bottom:1.25rem}
+.chl li{display:flex;gap:9px;padding:.45rem 0;border-bottom:1px solid var(--bdr);align-items:flex-start;font-size:13px;color:var(--inm);cursor:pointer;user-select:none}
+.chl li:last-child{border-bottom:none}
+.cb2{width:17px;height:17px;border:1.5px solid var(--bdr);border-radius:4px;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.chl li.chk .cb2{background:var(--teal);border-color:var(--teal)}
+.chl li.chk .cb2::after{content:"✓";color:#fff;font-size:10px;font-weight:700}
+.chl li.chk .ctx{text-decoration:line-through;color:#9CA3AF}
+.cls{background:var(--wh);border:1px solid var(--bdr);border-radius:10px;padding:1.1rem 1.4rem;margin-bottom:.9rem}
+.clt{font-size:11.5px;font-weight:600;color:var(--teal);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.7rem}
+.pr{display:flex;align-items:center;gap:9px;margin-bottom:1.25rem}
+.pb{height:5px;background:var(--bdr);border-radius:3px;overflow:hidden;flex:1}
+.pf{height:100%;background:var(--teal);border-radius:3px;transition:width .3s}
+.pt{font-size:12px;color:var(--inmu);white-space:nowrap}
+.tbr2{display:flex;gap:4px;background:var(--wh);border:1px solid var(--bdr);border-radius:10px;padding:4px;margin-bottom:1.25rem;flex-wrap:wrap}
+.tbb{padding:6px 14px;border-radius:7px;font-size:12.5px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--inmu);transition:all .15s;font-family:"DM Sans",sans-serif}
+.tbb:hover{background:var(--tpa);color:var(--teal)}.tbb.active{background:var(--navy);color:#fff}
+.tpn{display:none}.tpn.active{display:block}
+.lc{background:var(--wh);border:1px solid var(--bdr);border-radius:10px;padding:1.15rem;transition:box-shadow .15s,transform .15s}
+.lc:hover{box-shadow:0 4px 14px rgba(13,31,60,.08);transform:translateY(-2px)}
+.lb{display:inline-block;font-size:9.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:4px;margin-bottom:.65rem}
+.li{background:#EEF2FF;color:var(--nml)}.ld{background:var(--gpa2);color:var(--grn)}.lr{background:var(--tpa);color:var(--teal)}.lbk{background:var(--gpa);color:#7A5200}
+.ln{font-family:"Cormorant Garamond",serif;font-size:16px;font-weight:600;color:var(--navy);margin-bottom:2px}
+.lf{font-size:11.5px;color:var(--inmu);margin-bottom:.65rem}
+.lbd{font-size:12.5px;color:var(--inmu);line-height:1.6}
+.ldl{margin-top:.65rem;font-size:11.5px;color:var(--gold);font-weight:500}
+.lg2{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:.9rem;margin-bottom:1.25rem}
+.cc{background:var(--wh);border:1px solid var(--bdr);border-radius:11px;overflow:hidden;margin-bottom:1.1rem}
+.ch{padding:.9rem 1.4rem;display:flex;align-items:center;gap:11px}
+.ch.dt{background:var(--tpa);border-bottom:1px solid var(--tbr)}.ch.hy{background:var(--gpa);border-bottom:1px solid var(--gbr)}
+.ce{font-size:20px}.cm{flex:1}.cn2{font-weight:600;font-size:14px;color:var(--ink)}.cs{font-size:11.5px;color:var(--inmu)}
+.cbdy{padding:1.1rem 1.4rem}.cbdy p{font-size:13px}
+.trm{background:var(--wh);border:1px solid var(--bdr);border-radius:10px;padding:1.15rem;margin-bottom:.65rem}
+.trn{font-weight:600;font-size:14px;color:var(--ink);margin-bottom:.2rem}
+.trd{font-size:13px;color:var(--inmu);margin-bottom:.45rem;line-height:1.6}
+.tra{font-size:12px;color:#0A4040;background:var(--tpa);border-radius:6px;padding:5px 9px}
+.tra strong{color:var(--teal)}
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-bottom:1.25rem}
+.ri{background:var(--wh);border:1px solid var(--bdr);border-radius:10px;padding:1rem}
+.rh{display:flex;align-items:center;gap:7px;margin-bottom:.45rem}
+.rd{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.rhi{background:#DC2626}.rme{background:#D97706}.rlo{background:#059669}
+.rtl{font-weight:600;font-size:12.5px;color:var(--ink)}.rbd{font-size:12px;color:var(--inmu);line-height:1.6}
+.qbox{background:var(--wh);border:1px solid var(--bdr);border-radius:11px;padding:1.4rem;margin-bottom:1.1rem}
+.qt{font-size:14.5px;font-weight:500;color:var(--ink);margin-bottom:.9rem}
+.qopts{display:flex;flex-direction:column;gap:7px}
+.qo{padding:9px 13px;border-radius:8px;border:1.5px solid var(--bdr);cursor:pointer;font-size:13px;color:var(--inm);transition:all .15s;background:var(--cream)}
+.qo:hover{border-color:var(--teal);background:var(--tpa)}
+.qo.correct{background:var(--tpa);border-color:var(--teal);color:var(--teal)}
+.qo.wrong{background:var(--rpa);border-color:var(--red);color:var(--red)}
+.qex{font-size:12.5px;color:var(--inmu);margin-top:.65rem;padding:9px 11px;background:var(--gpa);border-radius:7px;display:none;line-height:1.6}
+.qs{font-family:"Cormorant Garamond",serif;font-size:40px;font-weight:600;color:var(--navy)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:var(--teal);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:"DM Sans",sans-serif;transition:background .15s}
+.btn:hover{background:var(--tlg)}
+.rl{display:block;padding:9px 0;border-bottom:1px solid var(--bdr);font-size:13px;color:var(--teal);text-decoration:none}
+.rl:hover{color:var(--navy)}.rl:last-child{border-bottom:none}
+</style>
+</head>
+<body>
+<div class="sb">
+<div class="sblogo">
+<div class="sblogo-title">DCA Toolkit</div>
+<div class="sblogo-sub">Venture Debt · Africa 2026</div>
+</div>
+<nav>
+<div class="ng">Getting Started</div>
+<button class="ni active" data-sec="overview">📊 Overview &amp; The Big Shift</button>
+<button class="ni" data-sec="dilemma">⚡ The Founder's Dilemma</button>
+<div class="ng">The Instruments</div>
+<button class="ni" data-sec="instruments">🗺️ Capital Map</button>
+<button class="ni" data-sec="howdebt">💡 How Venture Debt Works</button>
+<button class="ni" data-sec="howrbf">🔄 Revenue-Based Finance</button>
+<button class="ni" data-sec="hybrid">🔀 Hybrid Structures</button>
+<div class="ng">Decision Tools</div>
+<button class="ni" data-sec="framework">✅ Decision Framework</button>
+<button class="ni" data-sec="readiness">📋 Debt Readiness Checker</button>
+<div class="ng">African Market</div>
+<button class="ni" data-sec="lenders">🏦 Lenders Directory</button>
+<button class="ni" data-sec="cases">📁 Case Studies</button>
+<button class="ni" data-sec="risks">⚠️ Africa-Specific Risks</button>
+<div class="ng">Reference</div>
+<button class="ni" data-sec="terms">📖 Term Sheet Decoder</button>
+<button class="ni" data-sec="quiz">🎯 Knowledge Quiz</button>
+<button class="ni" data-sec="credits">🌍 Credits &amp; Sources</button>
+</nav>
+<div class="sbfoot"><strong>v1.0 · DCA 2026</strong>Methys Venture Studio<br>With Newtown Partners</div>
+</div>
+
+<main>
+
+<!-- OVERVIEW -->
+<div class="sec active" id="sec-overview">
+<div class="topbar">Overview &amp; The Big Shift</div>
+<div class="hero">
+<div class="hero-ey">Digital Collective Africa · Venture Debt Toolkit</div>
+<div class="hero-t">Debt is the New <span>Growth Capital</span></div>
+<div class="hero-b">Africa's startup financing landscape has fundamentally shifted. In 2025, venture debt crossed $1.6 billion — 41% of all startup capital on the continent. This toolkit helps founders and investors understand when, how and why to use it.</div>
+<div class="tags"><span class="tag tg">Series A–C Focus</span><span class="tag tt">Pan-African Context</span><span class="tag tb">Debt · RBF · Hybrid</span></div>
+</div>
+<div class="ca">
+<div class="co cg2">💡 <strong>The funding winter accelerated everything.</strong> Global VC into Africa fell 72% between 2021 and 2023. Founders who couldn't wait for equity to recover turned to debt — and discovered it often worked better for their actual business model.</div>
+<h2 class="st">The Numbers That Changed Everything</h2>
+<p class="sl">Three data points define the modern African capital stack.</p>
+<div class="sr">
+<div class="sc"><div class="sn g">$1.6B+</div><div class="sl2">Venture debt deployed in 2025 — all-time record, +63% YoY (Partech / AVCA)</div></div>
+<div class="sc"><div class="sn t">41%</div><div class="sl2">Share of all African startup capital that was debt in 2025 — up from 17% in 2019</div></div>
+<div class="sc"><div class="sn n">107</div><div class="sl2">Debt transactions in 2025 — 39% more than prior year's record of 77 deals</div></div>
+</div>
+<div class="sr">
+<div class="sc"><div class="sn g">$9.5M</div><div class="sl2">Median African debt deal — 4× larger than $2.5M median equity round</div></div>
+<div class="sc"><div class="sn t">82%</div><div class="sl2">Of 2025 debt went to Fintech ($716M) and Cleantech ($627M)</div></div>
+<div class="sc"><div class="sn n">18%</div><div class="sl2">Of Q1 2024 rounds were hybrid (debt + equity) — up from 6% in 2021</div></div>
+</div>
+<h3 class="sh">The 5-Year Trajectory</h3>
+<div class="tw"><table>
+<thead><tr><th>Year</th><th>Debt Deployed</th><th>Deals</th><th>% of Capital</th><th>Key Driver</th></tr></thead>
+<tbody>
+<tr><td class="tdl">2019</td><td>$350M</td><td>27</td><td>17%</td><td>Mostly DFI-led facilities</td></tr>
+<tr><td class="tdl">2021</td><td>$767M</td><td>43</td><td>—</td><td>Post-pandemic recovery surge</td></tr>
+<tr><td class="tdl">2022</td><td>$1.55B</td><td>71</td><td>—</td><td>Equity peak; debt diversification begins</td></tr>
+<tr><td class="tdl">2023</td><td>$1.21B</td><td>—</td><td>—</td><td>Equity winter; debt fills the gap</td></tr>
+<tr><td class="tdl">2024</td><td>$1.01B</td><td>77</td><td>31–37%</td><td>Hybrid deals surge</td></tr>
+<tr><td class="tdl"><strong>2025</strong></td><td><strong>$1.64–1.8B</strong></td><td><strong>107</strong></td><td><strong>41%</strong></td><td><strong>New record — debt goes mainstream</strong></td></tr>
+</tbody></table></div>
+<div class="co ct">🔍 <strong>The critical nuance:</strong> Companies accessing the largest 2025 debt facilities all share one thing — millions of paying customers with contractual cashflows. Debt is a growth tool for proven companies, not an equity replacement for early-stage startups.</div>
+<h3 class="sh">Where debt is flowing — 2025</h3>
+<div class="cg">
+<div class="cd ct"><div class="cdh"><div class="ci cit">🇰🇪</div><div><div class="ct2">Kenya — $498M (30%)</div></div></div><div class="cb">Sun King's $156M local-currency securitisation and a strong fintech ecosystem make Kenya the continent's largest debt market.</div></div>
+<div class="cd cn"><div class="cdh"><div class="ci cin">🇪🇬</div><div><div class="ct2">Egypt — $246M</div></div></div><div class="cb">Significant growth despite EGP devaluation. Mostly USD-denominated facilities. Logistics and fintech lead.</div></div>
+<div class="cd cn"><div class="cdh"><div class="ci cin">🇳🇬</div><div><div class="ct2">Nigeria — $160M</div></div></div><div class="cb">Constrained by CBN exchange control complexity. Most facilities structured as offshore holding company debt.</div></div>
+<div class="cd cg2"><div class="cdh"><div class="ci cig">🇿🇦</div><div><div class="ct2">South Africa — only 10%</div></div></div><div class="cb">SA volumes fell 45% YoY — a genuine opportunity gap. A market DCA can directly help unlock.</div></div>
+</div>
+</div>
+</div>
+
+<!-- DILEMMA -->
+<div class="sec" id="sec-dilemma">
+<div class="topbar">The Founder's Dilemma</div>
+<div class="hero">
+<div class="hero-ey">Why This Matters</div>
+<div class="hero-t">The <span>Equity Trap</span></div>
+<div class="hero-b">Every VC round permanently transfers ownership. By Series C, many African founders own less than 20% of the company they built. Venture debt offers a way out — for the right company at the right time.</div>
+</div>
+<div class="ca">
+<div class="cg">
+<div class="cd cr"><div class="cdh"><div class="ci cir">💸</div><div><div class="ct2">01 · Equity Dilution</div></div></div><div class="cb">Every VC round gives away ownership permanently. After three rounds at 20% each, a founder holds just 51%. Venture debt avoids this — only a small warrant (15–25% of loan value) is issued.</div></div>
+<div class="cd cr"><div class="cdh"><div class="ci cir">🏦</div><div><div class="ct2">02 · Banks Don't Work</div></div></div><div class="cb">African banks require 3–5 years profitable trading history, physical collateral, and personal surety. High-growth tech companies rarely qualify for conventional bank debt.</div></div>
+<div class="cd cr"><div class="cdh"><div class="ci cir">🕳️</div><div><div class="ct2">03 · The Series B Gap</div></div></div><div class="cb">Only ~10% of African Series A companies raise a Series B. Venture debt bridges the gap — capital to hit metrics needed to raise at a higher valuation.</div></div>
+</div>
+<div class="co cn">📌 <strong>From the Newtown Partners Venture Debt Playbook (2026):</strong> "The most valuable thing you own is your ownership stake. Venture debt lets you fuel growth without permanently transferring equity to investors who may not share your long-term vision."</div>
+<h3 class="sh">The six concrete benefits of venture debt</h3>
+<div class="tw"><table>
+<thead><tr><th>#</th><th>Benefit</th><th>What it means in practice</th></tr></thead>
+<tbody>
+<tr><td>1</td><td class="tdl">Preserve Equity</td><td>Only a small warrant is issued — not a 20–30% equity stake. At a $50M exit the difference is millions for founders.</td></tr>
+<tr><td>2</td><td class="tdl">Extend Runway</td><td>Stretch 12–18 months of cash to 24–36 months. Hit milestones before your next raise — on your terms.</td></tr>
+<tr><td>3</td><td class="tdl">Raise at Higher Valuation</td><td>Companies hitting growth milestones with debt typically command 2–4× better equity valuations at the next round.</td></tr>
+<tr><td>4</td><td class="tdl">Maintain Control</td><td>No new board seats. No investor veto rights. Venture debt is a financial instrument, not a governance handover.</td></tr>
+<tr><td>5</td><td class="tdl">Speed</td><td>Close in 6–10 weeks vs 4–6 months for equity. Critical in fast-moving African market windows.</td></tr>
+<tr><td>6</td><td class="tdl">Complement Equity</td><td>Debt and equity are not either/or. The largest 2025 African deals were hybrid structures combining both.</td></tr>
+</tbody></table></div>
+<h3 class="sh">Why Africa's business models suit debt</h3>
+<div class="cg">
+<div class="cd ct"><div class="ct2">Cash-Generative Earlier</div><div class="cb" style="margin-top:.4rem">African tech operates in real-economy sectors — fintech, logistics, agritech. Companies must be default-alive. Predictable cashflows can service debt from early on.</div></div>
+<div class="cd ct"><div class="ct2">Linear, Predictable Growth</div><div class="cb" style="margin-top:.4rem">Infrastructure bottlenecks mean more linear growth curves. Repayment schedules are more reliable — debt structurers can model cashflows with higher confidence.</div></div>
+<div class="cd ct"><div class="ct2">Trade Sale Exits</div><div class="cb" style="margin-top:.4rem">84% of African exits are trade sales at 2–5× multiples. More consistent than VC's winner-takes-all model. Structured credit captures this value efficiently.</div></div>
+<div class="cd ct"><div class="ct2">Speed Advantage</div><div class="cb" style="margin-top:.4rem">Venture debt closes in 6–10 weeks vs 3–6 months for equity. In fast-moving markets, speed is a genuine competitive advantage.</div></div>
+</div>
+</div>
+</div>
+
+<!-- INSTRUMENTS -->
+<div class="sec" id="sec-instruments">
+<div class="topbar">Capital Instruments Map</div>
+<div class="hero">
+<div class="hero-ey">The Instruments</div>
+<div class="hero-t">Your <span>Capital Options</span></div>
+<div class="hero-b">Not all capital is equal — and not all debt is the same. Understanding the full map of available instruments is the starting point for any funding strategy.</div>
+</div>
+<div class="ca">
+<div class="tw"><table>
+<thead><tr><th>Instrument</th><th>Dilution</th><th>Repayment</th><th>Speed</th><th>Ideal For</th></tr></thead>
+<tbody>
+<tr><td class="tdl">Equity VC</td><td class="tdb">15–30% per round</td><td>None — exit required</td><td>3–6 months</td><td>Pre-revenue to early revenue</td></tr>
+<tr><td class="tdl">Venture Debt</td><td class="tdn">Small warrant only</td><td>Fixed schedule</td><td>6–10 weeks</td><td>Series A+, $500K+ ARR</td></tr>
+<tr><td class="tdl">Revenue-Based Finance</td><td class="tdg">None</td><td>% of monthly revenue</td><td>2–4 weeks</td><td>SaaS, e-commerce, predictable revenue</td></tr>
+<tr><td class="tdl">Convertible Note</td><td class="tdn">Converts at next round</td><td>At maturity or conversion</td><td>2–4 weeks</td><td>Pre-seed / seed bridging</td></tr>
+<tr><td class="tdl">SAFE</td><td class="tdn">Converts at next round</td><td>None</td><td>1–2 weeks</td><td>Pre-seed / seed, US-style investors</td></tr>
+<tr><td class="tdl">Hybrid (Equity + Debt)</td><td class="tdn">Lower than pure equity</td><td>Debt component repaid</td><td>8–12 weeks</td><td>Growth stage — 18%+ of 2024 rounds</td></tr>
+<tr><td class="tdl">Asset-Backed / Securitisation</td><td class="tdg">None</td><td>From asset cashflows</td><td>12–20 weeks</td><td>Asset-heavy models (Sun King, Moove)</td></tr>
+</tbody></table></div>
+<div class="co cg2">💡 <strong>Key principle:</strong> Choose the instrument that matches your cashflow profile, not just your capital need. Debt requires repayment from cashflows — if those cashflows aren't predictable yet, equity is the right answer.</div>
+<h3 class="sh">Equity vs Hybrid: the ownership comparison</h3>
+<div class="cg">
+<div class="cd cr"><div class="ct2" style="font-size:14px;margin-bottom:.65rem">Pure Equity Path</div><div class="cb">Raise $7M equity → give up 25% → founder owns 75%.<br>After 3 equity rounds → founder owns ~43%.<br>Exit at $50M → founder receives ~$21.5M.</div></div>
+<div class="cd ct"><div class="ct2" style="font-size:14px;margin-bottom:.65rem">Hybrid Path (Equity + Debt)</div><div class="cb">Raise $2M equity (10%) + $5M debt → founder owns 90%.<br>Repay debt over 4 years from cashflows.<br>Exit at $50M → founder receives ~$45M.</div></div>
+</div>
+<p style="font-size:12px;color:var(--inmu)">* Illustrative only. Model your specific scenario before deciding.</p>
+</div>
+</div>
+
+<!-- HOW DEBT WORKS -->
+<div class="sec" id="sec-howdebt">
+<div class="topbar">How Venture Debt Works</div>
+<div class="hero">
+<div class="hero-ey">The Mechanics</div>
+<div class="hero-t">Venture Debt <span>Explained</span></div>
+<div class="hero-b">Step by step — how a venture debt facility actually works, from first conversation to funded.</div>
+</div>
+<div class="ca">
+<h2 class="st">Anatomy of a Venture Debt Facility</h2>
+<p class="sl">Venture debt is a loan with three distinguishing features: an interest-only period, amortising repayment from cashflows, and a small equity warrant.</p>
+<div class="cd ct" style="margin-bottom:1.25rem">
+<div class="ct2" style="font-size:14px;margin-bottom:.75rem">Illustrative Deal: $5M facility — Series B logistics company, West Africa</div>
+<div class="tw" style="margin-bottom:0"><table>
+<thead><tr><th>Term</th><th>Structure</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td class="tdl">Facility size</td><td>$5,000,000</td><td>$3M at close + $2M at 12-month milestone</td></tr>
+<tr><td class="tdl">Tenor</td><td>4 years</td><td>Yrs 1–2 interest only · Yrs 3–4 amortising</td></tr>
+<tr><td class="tdl">Interest rate</td><td>Quoted at credit approval</td><td>Typically 13–17% all-in for African markets</td></tr>
+<tr><td class="tdl">Equity warrant</td><td>20% of $5M = $1M warrant</td><td>Right to buy $1M of shares at current round price</td></tr>
+<tr><td class="tdl">Covenants</td><td>Min ARR + min cash balance</td><td>Tested quarterly. MAC clause standard.</td></tr>
+<tr><td class="tdl">Security</td><td>Floating charge over all assets</td><td>Subordinated to senior bank debt if any</td></tr>
+</tbody></table></div>
+</div>
+<h3 class="sh">The process: first call to funded</h3>
+<div class="ai open"><div class="ah" onclick="toggleAcc(this)"><div><div class="at">Weeks 1–2</div><div class="am">Initial screen — submit deck and financials</div></div><span class="ac">▼</span></div>
+<div class="ab" style="display:block"><p>Rapid quantitative screen: unit economics, ARR trajectory, burn rate, capital structure. Best-in-class lenders (e.g. Newtown Partners' AltSurge platform) return indicative terms within 5 business days. Required: pitch deck, 12–24 months P&amp;L, cap table, use of proceeds plan.</p></div></div>
+<div class="ai"><div class="ah" onclick="toggleAcc(this)"><div><div class="at">Weeks 2–4</div><div class="am">Deep dive — commercial and credit analysis</div></div><span class="ac">▼</span></div>
+<div class="ab"><p>Full commercial and credit analysis: unit economics, cohort analysis, competitive position, management assessment. Unlike equity DD, debt DD focuses on cashflow predictability, not just growth rate. One structured process — not a rolling data room.</p></div></div>
+<div class="ai"><div class="ah" onclick="toggleAcc(this)"><div><div class="at">Weeks 4–6</div><div class="am">Investment committee — one presentation</div></div><span class="ac">▼</span></div>
+<div class="ab"><p>You present once to IC. Good lenders include experienced African structured credit practitioners. Approval results in a formal term sheet. Negotiate here — it is much cheaper than negotiating in the full legal documentation phase.</p></div></div>
+<div class="ai"><div class="ah" onclick="toggleAcc(this)"><div><div class="at">Weeks 6–10</div><div class="am">Documentation and close</div></div><span class="ac">▼</span></div>
+<div class="ab"><p>Legal documentation: facility agreement, warrant instrument, security documents. Conditions precedent must be satisfied before drawdown. Capital typically hits your account within 2–3 business days of CP satisfaction.</p></div></div>
+<div class="ai"><div class="ah" onclick="toggleAcc(this)"><div><div class="at">Ongoing</div><div class="am">Portfolio management — the relationship matters</div></div><span class="ac">▼</span></div>
+<div class="ab"><p>Monthly financial reporting. Quarterly covenant testing. Strong lenders act as growth partners. Covenant breaches are NOT automatic defaults in a good lender relationship. Communicate proactively and early.</p></div></div>
+</div>
+</div>
+
+<!-- HOW RBF WORKS -->
+<div class="sec" id="sec-howrbf">
+<div class="topbar">Revenue-Based Finance</div>
+<div class="hero">
+<div class="hero-ey">A Distinct Instrument</div>
+<div class="hero-t">Revenue-Based <span>Finance</span></div>
+<div class="hero-b">RBF is not venture debt. It is a distinct instrument with different mechanics, providers and ideal use cases — and it's growing fast across Africa.</div>
+</div>
+<div class="ca">
+<p>Instead of fixed monthly payments, RBF repayments flex with your revenue. When revenue is high, you pay more. When revenue dips, you pay less. No fixed maturity date — you repay until the total agreed amount is reached.</p>
+<div class="co ct">🔄 <strong>The core mechanic:</strong> Provider advances $500K. You agree to repay $600K (capital factor 1.2×). Each month, 10% of gross revenue goes to repayment until $600K is repaid. No interest rate. No equity. No fixed schedule.</div>
+<div class="cg">
+<div class="cd ct"><div class="cdh"><div class="ci cit">✅</div><div><div class="ct2">Ideal for RBF</div></div></div><div class="cb">SaaS / subscription with predictable MRR · e-commerce with consistent GMV · Working capital · Marketing / CAC spend · Companies not yet qualifying for venture debt</div></div>
+<div class="cd cr"><div class="cdh"><div class="ci cir">❌</div><div><div class="ct2">Not suited for RBF</div></div></div><div class="cb">Pre-revenue startups · Project-based / lumpy revenue · R&amp;D or team building · Asset-heavy businesses needing secured debt</div></div>
+</div>
+<div class="tw"><table>
+<thead><tr><th>Factor</th><th>Revenue-Based Finance</th><th>Venture Debt</th></tr></thead>
+<tbody>
+<tr><td class="tdl">Min revenue</td><td>~$50K–$500K MRR</td><td>$500K–$1M ARR minimum</td></tr>
+<tr><td class="tdl">Repayment</td><td>% of monthly revenue — flexible</td><td>Fixed schedule (interest + amortisation)</td></tr>
+<tr><td class="tdl">Equity</td><td class="tdg">None</td><td>Small warrant (15–25% of loan)</td></tr>
+<tr><td class="tdl">Facility size</td><td>$50K–$2M typically</td><td>$2M–$50M+</td></tr>
+<tr><td class="tdl">Speed to close</td><td class="tdg">2–4 weeks</td><td>6–10 weeks</td></tr>
+<tr><td class="tdl">Best use</td><td>Working capital, marketing, inventory</td><td>Growth capex, expansion, runway extension</td></tr>
+</tbody></table></div>
+<h3 class="sh">Key African RBF providers</h3>
+<div class="lg2">
+<div class="lc"><span class="lb lr">RBF Specialist</span><div class="ln">Linea Capital</div><div class="lf">Southern Africa · Gender-lens · Agriculture · Education</div><div class="lbd">Co-founded by Julia Price and Colin Hundermark. Collateral-light, non-dilutive. Backed by FSDAi Nyala ($1M), USAID and Dutch Good Growth Fund ($1.25M).</div><div class="ldl">🎯 lineacap.com · $50K–$1M facilities</div></div>
+<div class="lc"><span class="lb lr">Smart Asset Finance</span><div class="ln">Untapped Global</div><div class="lf">15 African Countries · Solar · E-mobility</div><div class="lbd">Data-driven RBF for the missing middle. IoT real-time tracking. Harvard HBS case study (Jan 2025). 5,000+ entrepreneurs financed.</div><div class="ldl">🎯 untapped.global · $10K–$500K</div></div>
+<div class="lc"><span class="lb lr">Impact RBF</span><div class="ln">Uncap</div><div class="lf">Pan-Africa · Agriculture · Climate · Inclusion</div><div class="lbd">€30M "Unconventional Capital" fund for African startups and SMEs. Part of the Seedstars ecosystem.</div><div class="ldl">🎯 €50K–€500K · Agri and climate focus</div></div>
+<div class="lc"><span class="lb lr">SA RBF</span><div class="ln">Retail Capital</div><div class="lf">South Africa · Retail · Hospitality · Services</div><div class="lbd">One of Africa's longest-running RBF providers. Fast approvals for businesses with consistent card and digital transaction history.</div><div class="ldl">🎯 R100K–R5M · SA SME growth finance</div></div>
+</div>
+</div>
+</div>
+
+<!-- HYBRID -->
+<div class="sec" id="sec-hybrid">
+<div class="topbar">Hybrid Structures</div>
+<div class="hero">
+<div class="hero-ey">The Future of African Capital</div>
+<div class="hero-t">Hybrid <span>Structures</span></div>
+<div class="hero-b">18% of all 2024 African startup rounds combined debt and equity. Understanding hybrid structures is no longer optional for growth-stage founders.</div>
+</div>
+<div class="ca">
+<div class="co cg2">💡 <strong>The hybrid playbook:</strong> Raise $2M equity (10% dilution) + $5M venture debt = $7M total. vs. Raise $7M pure equity = ~25% dilution. Same capital raised. Very different ownership outcome at exit.</div>
+<div class="cg">
+<div class="cd cg2"><div class="ct2">Equity + Venture Debt</div><div class="cb" style="margin-top:.4rem">Most common hybrid. Raise a smaller equity tranche, layer debt on top. Reduces dilution while maintaining total capital. Works when company has cashflow to service the debt.</div></div>
+<div class="cd cg2"><div class="ct2">Asset-Backed + Growth Equity</div><div class="cb" style="margin-top:.4rem">Pledge physical assets (vehicles, solar) for cheap secured debt. Deploy equity only for intangible growth. Moove's model: fleet financed by debt, market expansion by equity.</div></div>
+<div class="cd cg2"><div class="ct2">Receivables Securitisation + VC</div><div class="cb" style="margin-top:.4rem">Package customer payment obligations into a security. Sun King's $156M Kenyan local-currency securitisation is the benchmark. Unlocks institutional capital at scale.</div></div>
+<div class="cd cg2"><div class="ct2">DFI Concessional + Commercial</div><div class="cb" style="margin-top:.4rem">A DFI (IFC, FMO, Proparco) provides first-loss capital de-risking a commercial lender's position — enabling larger facilities at better rates. Common in impact fintech and cleantech.</div></div>
+</div>
+</div>
+</div>
+
+<!-- DECISION FRAMEWORK -->
+<div class="sec" id="sec-framework">
+<div class="topbar">Decision Framework</div>
+<div class="hero">
+<div class="hero-ey">Decision Tool</div>
+<div class="hero-t">Debt vs Equity: <span>The Decision Tree</span></div>
+<div class="hero-b">Answer these five questions in sequence to determine whether venture debt, equity, RBF or hybrid is right for your company right now.</div>
+</div>
+<div class="ca">
+<div class="ai open"><div class="ah" onclick="toggleAcc(this)"><div><div class="at">Question 1 · Revenue</div><div class="am">Do you have more than $500K ARR?</div></div><span class="ac">▼</span></div>
+<div class="ab" style="display:block"><p><strong>If NO:</strong> Venture debt is not available yet. Focus on equity, grants, or small RBF if MRR ≥$50K. Build to the ARR threshold first — it is the single biggest gate for African lenders.</p><p><strong>If YES:</strong> You pass the first filter. Proceed to Question 2.</p><div class="co ct" style="margin-top:.75rem">🔢 Why $500K ARR? At this level most lenders can model 18–24 months of cashflows with enough confidence to underwrite. Below this, the error bars are too wide for debt to be sensibly priced.</div></div></div>
+<div class="ai"><div class="ah" onclick="toggleAcc(this)"><div><div class="at">Question 2 · Predictability</div><div class="am">Is ≥75% of your revenue recurring or contractual?</div></div><span class="ac">▼</span></div>
+<div class="ab"><p><strong>If NO:</strong> Lumpy revenues make debt risky. Consider RBF (which flexes with revenue) or equity.</p><p><strong>If YES:</strong> Strong predictability allows debt to be confidently structured. Proceed to Question 3.</p></div></div>
+<div class="ai"><div class="ah" onclick="toggleAcc(this)"><div><div class="at">Question 3 · Unit Economics</div><div class="am">Is your gross margin above 40% and improving?</div></div><span class="ac">▼</span></div>
+<div class="ab"><p><strong>If NO:</strong> Negative or thin margins mean debt service will consume the business. Fix unit economics before adding debt. Equity is the right instrument — no repayment regardless of margin.</p><p><strong>If YES:</strong> Growing margins mean cashflows will service debt comfortably. Proceed to Question 4.</p></div></div>
+<div class="ai"><div class="ah" onclick="toggleAcc(this)"><div><div class="at">Question 4 · FX Risk</div><div class="am">Is your revenue in USD, EUR or a stable currency?</div></div><span class="ac">▼</span></div>
+<div class="ab"><p><strong>If NO (revenue in NGN, EGP or highly volatile local currency):</strong> FX mismatch creates serious risk. A 30% naira devaluation effectively increases your USD debt cost by 30%. Structure debt in local currency, hedge, or be very conservative on sizing.</p><p><strong>If YES:</strong> Clean FX position. Proceed to Question 5.</p></div></div>
+<div class="ai"><div class="ah" onclick="toggleAcc(this)"><div><div class="at">Question 5 · Purpose</div><div class="am">Is this capital for growth, not for survival?</div></div><span class="ac">▼</span></div>
+<div class="ab"><p><strong>If this capital is to stop the company dying:</strong> Do NOT take venture debt. Debt on a struggling company accelerates failure. The covenants will be breached. Seek equity investors who believe in the recovery story.</p><p><strong>If this capital is to accelerate a proven model:</strong> You have passed all five filters. Venture debt is very likely the right instrument. Proceed to the Debt Readiness Checker.</p></div></div>
+<div class="div"></div>
+<h3 class="sh">When equity is still the right answer</h3>
+<div class="tw"><table>
+<thead><tr><th>Situation</th><th>Right Instrument</th><th>Reason</th></tr></thead>
+<tbody>
+<tr><td>Pre-revenue startup</td><td class="tdg">Equity VC</td><td>No cashflow to service debt.</td></tr>
+<tr><td>Negative gross margin</td><td class="tdg">Equity VC</td><td>Debt service consumes working capital and accelerates failure.</td></tr>
+<tr><td>Business model still being tested</td><td class="tdg">Equity VC</td><td>Pivots need flexibility. Covenants impair pivot ability.</td></tr>
+<tr><td>Need strategic partner value</td><td class="tdg">Equity VC</td><td>The right VC brings network, talent, follow-on. Debt doesn't.</td></tr>
+<tr><td>Surviving a crisis</td><td class="tdb">Never debt</td><td>Debt on a distressed company accelerates failure.</td></tr>
+<tr><td>Proven model + growth capital needed</td><td class="tdn">Debt / Hybrid</td><td>Minimise dilution. Use debt for capital-efficient growth.</td></tr>
+</tbody></table></div>
+</div>
+</div>
+
+<!-- READINESS -->
+<div class="sec" id="sec-readiness">
+<div class="topbar">Debt Readiness Checker</div>
+<div class="hero">
+<div class="hero-ey">Founder Tool</div>
+<div class="hero-t">Debt Readiness <span>Checklist</span></div>
+<div class="hero-b">Click each item to track your readiness to approach a venture debt lender. Companies with 20+ items checked typically close in 8–10 weeks.</div>
+</div>
+<div class="ca">
+<div class="pr"><div class="pb"><div class="pf" id="rp" style="width:0%"></div></div><div class="pt" id="rt">0 / 28 complete</div></div>
+<div class="cls"><div class="clt">📊 Financial Readiness</div>
+<ul class="chl" data-group="ready">
+<li><div class="cb2"></div><span class="ctx">ARR or annualised revenue exceeds $500K</span></li>
+<li><div class="cb2"></div><span class="ctx">Monthly management accounts for last 24 months prepared</span></li>
+<li><div class="cb2"></div><span class="ctx">Audited or reviewed annual financial statements available</span></li>
+<li><div class="cb2"></div><span class="ctx">Gross margin &gt;40% and documented with workings</span></li>
+<li><div class="cb2"></div><span class="ctx">Cohort analysis showing customer retention trends</span></li>
+<li><div class="cb2"></div><span class="ctx">3-year cash flow model with monthly Year 1 granularity</span></li>
+<li><div class="cb2"></div><span class="ctx">Unit economics: CAC, LTV, payback period fully documented</span></li>
+</ul></div>
+<div class="cls"><div class="clt">💰 Revenue Quality</div>
+<ul class="chl" data-group="ready">
+<li><div class="cb2"></div><span class="ctx">≥75% of revenue is recurring or contractual</span></li>
+<li><div class="cb2"></div><span class="ctx">Revenue broken down by customer, product and geography</span></li>
+<li><div class="cb2"></div><span class="ctx">Churn rate documented and stable or improving</span></li>
+<li><div class="cb2"></div><span class="ctx">Hard-currency revenue percentage clearly documented</span></li>
+<li><div class="cb2"></div><span class="ctx">Top 10 customers by revenue identified with contracts in place</span></li>
+</ul></div>
+<div class="cls"><div class="clt">🏛️ Governance &amp; Structure</div>
+<ul class="chl" data-group="ready">
+<li><div class="cb2"></div><span class="ctx">Full cap table up to date and consistent with registry</span></li>
+<li><div class="cb2"></div><span class="ctx">Board meetings held regularly with minutes maintained</span></li>
+<li><div class="cb2"></div><span class="ctx">Existing shareholder agreements reviewed for debt restrictions</span></li>
+<li><div class="cb2"></div><span class="ctx">IP properly assigned to the company, not held by founders personally</span></li>
+<li><div class="cb2"></div><span class="ctx">Corporate structure chart (holding → operating entities) prepared</span></li>
+<li><div class="cb2"></div><span class="ctx">Regulatory licences current in all operating jurisdictions</span></li>
+</ul></div>
+<div class="cls"><div class="clt">🌍 Africa-Specific</div>
+<ul class="chl" data-group="ready">
+<li><div class="cb2"></div><span class="ctx">Exchange control compliance reviewed in each operating market</span></li>
+<li><div class="cb2"></div><span class="ctx">FX exposure quantified: local vs hard currency revenue split</span></li>
+<li><div class="cb2"></div><span class="ctx">Holding structure reviewed for debt repatriation (Mauritius / Cayman / SA)</span></li>
+<li><div class="cb2"></div><span class="ctx">Bank statements (last 12 months) available for live lender verification</span></li>
+<li><div class="cb2"></div><span class="ctx">Tax compliance records in all operating jurisdictions</span></li>
+</ul></div>
+<div class="cls"><div class="clt">🎯 Use of Proceeds</div>
+<ul class="chl" data-group="ready">
+<li><div class="cb2"></div><span class="ctx">Clear, specific use of proceeds plan prepared</span></li>
+<li><div class="cb2"></div><span class="ctx">Each use of proceeds item linked to a measurable KPI or milestone</span></li>
+<li><div class="cb2"></div><span class="ctx">Growth model showing how debt proceeds generate cashflow to repay</span></li>
+<li><div class="cb2"></div><span class="ctx">Debt service coverage ratio modelled at base, downside and stress cases</span></li>
+<li><div class="cb2"></div><span class="ctx">Legal counsel engaged who understands African cross-border debt</span></li>
+</ul></div>
+</div>
+</div>
+
+<!-- LENDERS -->
+<div class="sec" id="sec-lenders">
+<div class="topbar">African Lenders Directory</div>
+<div class="hero">
+<div class="hero-ey">Verified Active Players · 2025/2026</div>
+<div class="hero-t">African Venture Debt <span>Lender Directory</span></div>
+<div class="hero-b">Verified active venture debt and RBF providers across Africa — categorised by type, geography and sector focus.</div>
+</div>
+<div class="ca">
+<div class="tbr2" id="lend-tabs">
+<button class="tbb active" data-tab="lt-inst">Institutional Debt</button>
+<button class="tbb" data-tab="lt-dfi">DFI / Impact</button>
+<button class="tbb" data-tab="lt-bank">Commercial Banks</button>
+<button class="tbb" data-tab="lt-rbf">RBF Specialists</button>
+</div>
+<div id="tab-lt-inst" class="tpn active">
+<div class="lg2">
+<div class="lc"><span class="lb li">Institutional Debt</span><div class="ln">Newtown Partners</div><div class="lf">Pan-Africa · Series B+ · Subordinated venture debt</div><div class="lbd">VC firm actively deploying venture debt. Subordinated debt + equity warrant model. AI-native underwriting via AltSurge platform. Co-founders: Vinny Lingham and Llew Claasen. Focus: SA, Nigeria, Kenya, Egypt.</div><div class="ldl">🏆 $2M–$10M · Warrant: 15–25% · akash@newtownpartners.com</div></div>
+<div class="lc"><span class="lb li">Institutional Debt</span><div class="ln">Lendable</div><div class="lf">Pan-Africa · Fintech · Agritech · SME Lending</div><div class="lbd">Emerging market-focused debt fund. One of Africa's most active debt investors. Strong East and West Africa track record. Provided $30M in MFS Africa's landmark $100M facility.</div><div class="ldl">🏆 $30M in MFS Africa $100M facility · lendable.io</div></div>
+<div class="lc"><span class="lb li">Institutional Debt</span><div class="ln">Verdant Capital</div><div class="lf">Pan-Africa · Financial services · Structured credit</div><div class="lbd">Specialist structured debt advisory and origination. Arranges subordinated debt, quasi-equity and structured credit. Deep DFI and institutional lender network across East, West and Southern Africa.</div><div class="ldl">🏆 Active across all major African markets</div></div>
+<div class="lc"><span class="lb li">Institutional Debt</span><div class="ln">Norsad Finance</div><div class="lf">SADC Region · SME growth debt</div><div class="lbd">SADC-focused private debt fund providing growth debt to SMEs across Southern Africa. Flexible covenants designed for African business realities. Active in Zambia, Botswana, Zimbabwe, SA, Mozambique.</div><div class="ldl">🏆 Southern Africa SME growth debt specialist</div></div>
+<div class="lc"><span class="lb li">Private Credit</span><div class="ln">NBK Capital Partners</div><div class="lf">Sub-Saharan Africa · Asset-backed · Mezzanine</div><div class="lbd">Kuwait-based private credit fund with growing African portfolio. First African investment: Moove's $10M asset-backed facility (2022) — proving global credit funds will enter Africa for well-structured deals.</div><div class="ldl">🏆 Moove $10M asset-backed facility, 2022</div></div>
+<div class="lc"><span class="lb li">Institutional Debt</span><div class="ln">Lateral Capital</div><div class="lf">East Africa · Kenya / Uganda / Rwanda</div><div class="lbd">East Africa-focused growth capital — both equity and debt. Particularly active in Kenya and EAC. Deep understanding of mobile money and digital financial services ecosystems.</div><div class="ldl">🏆 Nairobi-based · EAC focus</div></div>
+</div></div>
+<div id="tab-lt-dfi" class="tpn">
+<div class="lg2">
+<div class="lc"><span class="lb ld">DFI</span><div class="ln">IFC (World Bank Group)</div><div class="lf">Pan-Africa · All sectors · Debt + equity</div><div class="lbd">World's largest DFI. Provides direct loans, quasi-equity and equity. IFC Performance Standards are the de facto ESG framework for DFI-backed deals. Large facilities ($5M–$100M+). Active in MFS Africa, M-KOPA and many major deals.</div><div class="ldl">🏆 ifc.org — largest DFI in African tech debt</div></div>
+<div class="lc"><span class="lb ld">DFI</span><div class="ln">British International Investment</div><div class="lf">Sub-Saharan Africa · All sectors</div><div class="lbd">UK DFI (formerly CDC Group). One of Africa's most active DFIs — debt, equity and fund investments. Growing focus on climate and gender-lens. Particularly active in East and West Africa.</div><div class="ldl">🏆 bii.co.uk — major participant across Africa</div></div>
+<div class="lc"><span class="lb ld">DFI</span><div class="ln">FMO (Dutch)</div><div class="lf">Pan-Africa · Financial services · Agri</div><div class="lbd">Netherlands development bank. Long-term loans, equity and guarantees. Strong fintech and financial inclusion focus. Backed Linea Capital via the Dutch Good Growth Fund (DGGF).</div><div class="ldl">🏆 fmo.nl · Backed Linea Capital via DGGF</div></div>
+<div class="lc"><span class="lb ld">DFI</span><div class="ln">Proparco (French)</div><div class="lf">Francophone Africa + Pan-Africa</div><div class="lbd">French DFI particularly strong in Francophone Africa — Senegal, Côte d'Ivoire, Cameroon, DRC. Critical partner for any CFA zone debt deal.</div><div class="ldl">🏆 proparco.fr · Strong CFA zone relationships</div></div>
+</div></div>
+<div id="tab-lt-bank" class="tpn">
+<div class="lg2">
+<div class="lc"><span class="lb lbk">Commercial Bank</span><div class="ln">Rand Merchant Bank</div><div class="lf">Southern + West Africa · Large facilities</div><div class="lbd">FirstRand Group's investment banking division. Led Wave's $137M facility — Africa's largest ever single venture debt transaction. Increasing appetite for African tech debt.</div><div class="ldl">🏆 Wave $137M facility (2025) — record deal</div></div>
+<div class="lc"><span class="lb lbk">Commercial Bank</span><div class="ln">Standard Bank / Stanbic</div><div class="lf">Pan-Africa · 20 Countries</div><div class="lbd">Africa's largest bank by assets. Growing CIB appetite for tech-sector debt. Relationship-driven — existing banking relationship typically required. Stanbic brand in East and West Africa.</div><div class="ldl">🏆 Growing pipeline of tech structured credit deals</div></div>
+<div class="lc"><span class="lb lbk">Commercial Bank</span><div class="ln">Absa CIB</div><div class="lf">Sub-Saharan Africa · Structured credit</div><div class="lbd">Corporate and investment banking with strong structured credit capability. Growing innovation economy focus. Active across SA, Kenya, Nigeria and Ghana.</div><div class="ldl">🏆 absa.africa — structured credit across SSA</div></div>
+<div class="lc"><span class="lb lbk">Pan-African Bank</span><div class="ln">Equity Bank Group</div><div class="lf">East + Central Africa · SME</div><div class="lbd">East Africa's leading retail and SME bank. Strong Kenya, Uganda, Rwanda, DRC, Tanzania footprint. Increasingly competitive for SME growth lending as a local alternative to international debt funds.</div><div class="ldl">🏆 equitybankgroup.com · Leading EAC lender</div></div>
+</div></div>
+<div id="tab-lt-rbf" class="tpn">
+<div class="lg2">
+<div class="lc"><span class="lb lr">RBF Specialist</span><div class="ln">Linea Capital</div><div class="lf">Southern Africa · Gender-lens</div><div class="lbd">SA-based RBF. Non-dilutive, collateral-light. Backed by FSDAi Nyala, USAID and Dutch Good Growth Fund. Strong gender and impact mandate.</div><div class="ldl">🎯 lineacap.com · $50K–$1M</div></div>
+<div class="lc"><span class="lb lr">Smart Asset Finance</span><div class="ln">Untapped Global</div><div class="lf">15 African Countries · Solar · E-mobility</div><div class="lbd">Data-driven RBF + asset finance. IoT real-time tracking. Harvard HBS case study (2025). 5,000+ entrepreneurs financed. Based in Nairobi.</div><div class="ldl">🎯 untapped.global · $10K–$500K</div></div>
+<div class="lc"><span class="lb lr">Impact RBF</span><div class="ln">Uncap</div><div class="lf">Pan-Africa · Agriculture · Climate</div><div class="lbd">€30M "Unconventional Capital" fund. RBF with focus on agriculture, climate resilience and financial inclusion. Part of Seedstars ecosystem.</div><div class="ldl">🎯 €50K–€500K · Agri and climate focus</div></div>
+<div class="lc"><span class="lb lr">Revenue-Linked</span><div class="ln">Flow48</div><div class="lf">Pan-Africa · Established SMEs</div><div class="lbd">Transforms future revenues into upfront capital. Flexible terms, limited documentation. Fast onboarding for businesses with 12+ months consistent digital revenue.</div><div class="ldl">🎯 $50K–$1M · SME working capital</div></div>
+</div></div>
+</div>
+</div>
+
+<!-- CASE STUDIES -->
+<div class="sec" id="sec-cases">
+<div class="topbar">Case Studies</div>
+<div class="hero">
+<div class="hero-ey">Real Deals · Verified Outcomes</div>
+<div class="hero-t">African Venture Debt <span>Case Studies</span></div>
+<div class="hero-b">Real transactions from across the continent — what they were, why they worked, and what founders can learn.</div>
+</div>
+<div class="ca">
+<div class="cc"><div class="ch dt"><div class="ce">🌊</div><div class="cm"><div class="cn2">Wave — Senegal / Francophone Africa</div><div class="cs">Mobile Money · $137M · Rand Merchant Bank · 2025</div></div></div>
+<div class="cbdy"><p>West Africa's largest mobile money operator (10M+ active users) closed a $137M facility with RMB — the largest single venture debt transaction in African tech history.</p>
+<div class="cg" style="margin-top:.9rem">
+<div class="cd ct" style="margin-bottom:0"><div class="ct2">Why it worked</div><div class="cb">Massive, predictable transaction volume. 10M+ active users generating mobile money fees. Cross-border payments diversifying revenue across multiple CFA markets. Strong BCEAO regulatory standing.</div></div>
+<div class="cd cn" style="margin-bottom:0"><div class="ct2">What founders learn</div><div class="cb">Scale and predictability are everything in debt. Build the metrics that make debt obvious before approaching lenders. Volume + predictability = lender confidence.</div></div>
+</div></div></div>
+<div class="cc"><div class="ch dt"><div class="ce">🌍</div><div class="cm"><div class="cn2">MFS Africa — Pan-Africa</div><div class="cs">Mobile Financial Services · $100M · Lendable + DFI consortium · 2023</div></div></div>
+<div class="cbdy"><p>Africa's largest digital payments hub (400M+ users, 35+ countries) raised a $100M debt facility — Lendable providing $30M and DFI consortium providing the remainder.</p>
+<div class="cg" style="margin-top:.9rem">
+<div class="cd ct" style="margin-bottom:0"><div class="ct2">Why it worked</div><div class="cb">$50M+ ARR. 35+ country geographic diversification — no single country &gt;15% of revenue. Mauritius holding structure enabling clean offshore debt.</div></div>
+<div class="cd cn" style="margin-bottom:0"><div class="ct2">What founders learn</div><div class="cb">Geographic diversification reduces lender concentration risk and unlocks larger facilities. Build pan-African revenue before approaching for scale debt.</div></div>
+</div></div></div>
+<div class="cc"><div class="ch hy"><div class="ce">🚗</div><div class="cm"><div class="cn2">Moove — Nigeria / Sub-Saharan Africa</div><div class="cs">Mobility Fintech · $10M asset-backed · NBK Capital Partners · 2022</div></div></div>
+<div class="cbdy"><p>Nigerian mobility fintech providing vehicle financing to ride-hailing drivers. Raised $10M asset-backed facility from NBK Capital — the fund's first-ever African investment. Vehicle fleet used as collateral.</p>
+<div class="cg" style="margin-top:.9rem">
+<div class="cd ct" style="margin-bottom:0"><div class="ct2">Why it worked</div><div class="cb">Asset-backed structure aligned financing to business model. Vehicle fleet = real collateral. Driver revenue streams = predictable cashflow. Proved global credit funds will enter Africa when structure is right.</div></div>
+<div class="cd cn" style="margin-bottom:0"><div class="ct2">What happened next</div><div class="cb">Moove raised $76M (Mubadala + BlackRock, 2023) then a $100M Series B led by Uber (2024) at $750M valuation. Well-structured debt unlocked the next equity round at a much better valuation.</div></div>
+</div></div></div>
+<div class="cc"><div class="ch dt"><div class="ce">☀️</div><div class="cm"><div class="cn2">Sun King — Kenya</div><div class="cs">Off-grid Solar · $156M local-currency securitisation · 2025</div></div></div>
+<div class="cbdy"><p>$156M local-currency securitisation of customer payment receivables in Kenya — the largest local-currency structured finance transaction in East African tech history. Borrowing in Kenyan shillings eliminated FX risk entirely.</p>
+<div class="cg" style="margin-top:.9rem">
+<div class="cd ct" style="margin-bottom:0"><div class="ct2">Why it was groundbreaking</div><div class="cb">Local-currency securitisation eliminates FX mismatch risk. Millions of customer PAYG obligations = bondable receivables. Opens a new asset class for African cleantech.</div></div>
+<div class="cd cn" style="margin-bottom:0"><div class="ct2">What founders learn</div><div class="cb">If your business has millions of small customer payment obligations, securitisation could unlock institutional capital at scale. Requires specialist structuring — engage advisors early.</div></div>
+</div></div></div>
+<div class="cc"><div class="ch dt"><div class="ce">💳</div><div class="cm"><div class="cn2">Zeepay — Ghana</div><div class="cs">Cross-border Payments · $18M senior secured · 2023</div></div></div>
+<div class="cbdy"><p>Ghana's leading cross-border payment platform raised $18M in senior secured venture debt — at the time one of West Africa's largest standalone venture debt deals. Funded expansion across 15+ African markets.</p>
+<div class="cg" style="margin-top:.9rem">
+<div class="cd ct" style="margin-bottom:0"><div class="ct2">Why it worked</div><div class="cb">Remittance flows are highly predictable. Cross-border payments create hard-currency revenue. Senior secured structure gave lenders strong downside protection despite Ghana's challenging macro in 2023.</div></div>
+<div class="cd cn" style="margin-bottom:0"><div class="ct2">What founders learn</div><div class="cb">Even in challenging macro environments, strong unit economics can unlock institutional debt. Senior secured structure was key to pricing — consider what assets you can pledge.</div></div>
+</div></div></div>
+</div>
+</div>
+
+<!-- RISKS -->
+<div class="sec" id="sec-risks">
+<div class="topbar">Africa-Specific Risks</div>
+<div class="hero">
+<div class="hero-ey">Risk Framework</div>
+<div class="hero-t">What Can Go <span>Wrong</span></div>
+<div class="hero-b">Venture debt in Africa carries risks that global checklists miss entirely. Understand these before signing any facility agreement.</div>
+</div>
+<div class="ca">
+<div class="co cr">⚠️ <strong>The fundamental challenge:</strong> African startups operate in markets where revenue predictability remains elusive — not due to poor business models, but because of infrastructure gaps, regulatory uncertainty, and payment behaviours that swing dramatically on macroeconomic conditions.</div>
+<div class="rg">
+<div class="ri"><div class="rh"><div class="rd rhi"></div><div class="rtl">FX Mismatch Risk</div></div><div class="rbd">Borrowing in USD/EUR while earning in naira or shillings creates compounding risk. Nigeria's naira fell 70% vs USD in 2023–24. A $5M USD facility effectively became an $8.5M burden in local terms. Never borrow USD against local currency revenue without a hedging strategy.</div></div>
+<div class="ri"><div class="rh"><div class="rd rhi"></div><div class="rtl">Covenant Trap</div></div><div class="rbd">Covenants that seem conservative at signing become traps during a demand downturn. If minimum ARR is $800K when you're at $1M, one large customer churning breaches the covenant. Negotiate 20%+ headroom and ensure "equity cure" rights and 60+ day cure periods.</div></div>
+<div class="ri"><div class="rh"><div class="rd rhi"></div><div class="rtl">Regulatory Change Risk</div></div><div class="rbd">A single CBN directive can transform a thriving fintech overnight — as multiple Nigerian lenders discovered in 2023. Have a regulatory contingency plan. Ensure covenants account for industry-wide disruptions outside company control.</div></div>
+<div class="ri"><div class="rh"><div class="rd rhi"></div><div class="rtl">Collection Delay Risk</div></div><div class="rbd">Mobile money reconciliation delays and USSD downtime can create 2–4 week gaps between contractual revenue and actual cash receipt — triggering technical covenant breaches even when underlying business is fine. Build a dedicated cash buffer.</div></div>
+<div class="ri"><div class="rh"><div class="rd rme"></div><div class="rtl">Down-Round Interaction</div></div><div class="rbd">Anti-dilution protection in existing SHAs may interact badly with new shares issued on warrant exercise. A down-round activating anti-dilution ratchets from earlier investors creates unexpected dilution. Review SHA terms before issuing any debt warrants.</div></div>
+<div class="ri"><div class="rh"><div class="rd rme"></div><div class="rtl">Refinancing Risk</div></div><div class="rbd">A 3-year facility maturing when debt markets are tight forces punitive refinancing (as happened in 2023). Always maintain 2+ lender relationships and begin refinancing conversations 12+ months before maturity.</div></div>
+<div class="ri"><div class="rh"><div class="rd rme"></div><div class="rtl">Exchange Control (SA / Nigeria)</div></div><div class="rbd">SARB loop regulations and CBN repatriation restrictions can make it difficult to service offshore debt from local operating cashflows. Get a specific legal opinion on the repatriation path before signing any offshore facility.</div></div>
+<div class="ri"><div class="rh"><div class="rd rlo"></div><div class="rtl">MAC Clause Risk</div></div><div class="rbd">Material Adverse Change clauses are deliberately vague and dangerous in Africa given the frequency of macro shocks. Limit MAC to company-specific events only — not macro or industry-wide events — and define materiality thresholds explicitly.</div></div>
+</div>
+<h3 class="sh">Country-specific risk notes</h3>
+<div class="tw"><table>
+<thead><tr><th>Market</th><th>Key Risk</th><th>Mitigation</th></tr></thead>
+<tbody>
+<tr><td class="tdl">Nigeria 🇳🇬</td><td>CBN exchange control, naira volatility, repatriation restrictions</td><td>Offshore holding, USD revenue, CACS registration</td></tr>
+<tr><td class="tdl">South Africa 🇿🇦</td><td>SARB loop structure, ZAR volatility</td><td>SARB approval for offshore facilities, hard-currency revenue</td></tr>
+<tr><td class="tdl">Kenya 🇰🇪</td><td>CBK regulations on mobile money, fintech licensing evolution</td><td>CBK engagement, diversified product set</td></tr>
+<tr><td class="tdl">Egypt 🇪🇬</td><td>EGP severe devaluation, currency controls</td><td>USD-denominated contracts, offshore holding</td></tr>
+<tr><td class="tdl">Francophone West 🇸🇳</td><td>BCEAO regulations, CFA zone restrictions</td><td>Proparco/French DFI relationships, OHADA legal counsel</td></tr>
+</tbody></table></div>
+</div>
+</div>
+
+<!-- TERMS -->
+<div class="sec" id="sec-terms">
+<div class="topbar">Term Sheet Decoder</div>
+<div class="hero">
+<div class="hero-ey">Reference Guide</div>
+<div class="hero-t">Venture Debt <span>Term Sheet Decoded</span></div>
+<div class="hero-b">Every key term in an African venture debt facility — plain-English definitions with Africa-specific context. Do not sign until you understand all of these.</div>
+</div>
+<div class="ca">
+<div class="tbr2" id="term-tabs">
+<button class="tbb active" data-tab="tt-econ">Economics</button>
+<button class="tbb" data-tab="tt-struct">Structure</button>
+<button class="tbb" data-tab="tt-cov">Covenants</button>
+<button class="tbb" data-tab="tt-prot">Protections</button>
+</div>
+<div id="tab-tt-econ" class="tpn active">
+<div class="trm"><div class="trn">Interest Rate</div><div class="trd">Annual cost of the loan as a percentage. Usually base rate (SOFR / JIBAR) plus a margin. Fixed rates provide certainty; floating rates introduce risk.</div><div class="tra"><strong>Africa context:</strong> Expect 12–18% all-in vs 8–12% in developed markets. The premium reflects currency, regulatory and liquidity risk. Anything above 18% should be scrutinised closely.</div></div>
+<div class="trm"><div class="trn">Equity Warrant</div><div class="trd">A right — not obligation — to purchase shares at the current round price. The equity kicker providing lender upside alongside interest income. Expressed as % of facility size.</div><div class="tra"><strong>Africa context:</strong> Standard warrants are 15–25% of facility size. On a $5M facility that is a $750K–$1.25M warrant. Model this in your cap table at different exit scenarios.</div></div>
+<div class="trm"><div class="trn">Arrangement Fee</div><div class="trd">An upfront fee paid to the lender for structuring and providing the facility. Typically 1–3% of facility size. Paid once at close — not recurring.</div><div class="tra"><strong>Africa context:</strong> A 2% fee on a $5M facility = $100K upfront. Factor into all-in cost of capital. Sometimes negotiable — especially on larger facilities.</div></div>
+<div class="trm"><div class="trn">Capital Factor (RBF)</div><div class="trd">In Revenue-Based Finance, total repayment expressed as a multiple of the advance. A 1.2× capital factor on $500K = $600K total repayment.</div><div class="tra"><strong>Africa context:</strong> Standard African RBF factors are 1.15×–1.5×. Convert to effective APR for comparison with venture debt — a 1.3× factor repaid over 12 months is approximately 30% APR equivalent.</div></div>
+</div>
+<div id="tab-tt-struct" class="tpn">
+<div class="trm"><div class="trn">Tenor</div><div class="trd">Total duration of the loan facility. Most African venture debt is 3–5 years, including the interest-only period plus amortisation.</div><div class="tra"><strong>Africa context:</strong> Push for 4–5 years. 3-year tenors in Africa can be tight given time needed to hit Series B milestones after initial growth targets.</div></div>
+<div class="trm"><div class="trn">Interest-Only Period</div><div class="trd">Initial period (typically 12–24 months) paying only interest, not principal. Maximum growth window — cashflow consumed only by interest payments.</div><div class="tra"><strong>Africa context:</strong> Negotiate the longest possible IO period. 24 months is ideal; 12 months is the minimum worth accepting. Use aggressively to hit milestones that justify your next equity raise.</div></div>
+<div class="trm"><div class="trn">Tranche Structure</div><div class="trd">Splitting the facility into multiple drawdowns conditional on milestones. e.g. $3M at close, $2M when ARR hits $2M. Reduces lender risk and creates natural growth checkpoints.</div><div class="tra"><strong>Africa context:</strong> Very common in African deals. Negotiate milestone-linked tranches that align with your business plan — not arbitrary financial metrics.</div></div>
+<div class="trm"><div class="trn">Security / Floating Charge</div><div class="trd">Assets pledged as security. Venture debt typically uses a floating charge over all company assets rather than specific asset security.</div><div class="tra"><strong>Africa context:</strong> In asset-heavy businesses (fleet, solar), specific asset security enables cheaper debt. Know exactly what you are pledging and how it interacts with future financing.</div></div>
+</div>
+<div id="tab-tt-cov" class="tpn">
+<div class="trm"><div class="trn">Financial Covenants</div><div class="trd">Minimum financial thresholds maintained throughout the loan. Breach triggers lender remedies. Most common: minimum ARR, minimum cash balance, minimum DSCR.</div><div class="tra"><strong>Africa context:</strong> Negotiate headroom of at least 20% above base case projections. African businesses face more volatility than Western peers — build this into every negotiation.</div></div>
+<div class="trm"><div class="trn">Debt Service Coverage Ratio (DSCR)</div><div class="trd">EBITDA divided by total debt service in a period. A DSCR of 1.2× means you generate 20% more cashflow than needed to service debt. Standard minimum covenant.</div><div class="tra"><strong>Africa context:</strong> Model DSCR at base, downside (30% revenue miss), and stress (50% miss). If DSCR falls below 1.0× in the stress case, the facility size may be too large.</div></div>
+<div class="trm"><div class="trn">Cure Period</div><div class="trd">Time allowed to fix a covenant breach before lender can enforce. Typically 30–60 days. Without a cure period, a technical breach becomes an immediate default.</div><div class="tra"><strong>Africa context:</strong> Negotiate at least 60 days and include "equity cure" rights — the ability to inject equity capital to fix a financial covenant breach. Protects against timing breaches (large customer paying late).</div></div>
+<div class="trm"><div class="trn">Material Adverse Change (MAC)</div><div class="trd">Allows lender to call the loan if a "material adverse change" occurs in the company's business or prospects. Deliberately vague — which makes it dangerous.</div><div class="tra"><strong>Africa context:</strong> Limit MAC to company-specific events — not macro or industry-wide events. Define materiality thresholds explicitly (e.g. &gt;40% revenue decline for &gt;2 consecutive quarters).</div></div>
+</div>
+<div id="tab-tt-prot" class="tpn">
+<div class="trm"><div class="trn">Change of Control</div><div class="trd">Requires lender consent before a controlling shareholder change. Typically triggered by sale of &gt;50% of equity or voting rights.</div><div class="tra"><strong>Africa context:</strong> Ensure "control" is defined using SA / Nigerian company law standards. A secondary sale by an existing investor without control should not require lender consent.</div></div>
+<div class="trm"><div class="trn">Negative Pledge</div><div class="trd">A promise not to pledge the same assets as security to another creditor without lender consent. Protects the lender's security position. Almost universally required.</div><div class="tra"><strong>Africa context:</strong> Ensure equipment finance carve-outs are explicit and generous. Asset-specific financing (vehicles, servers, solar) should be clearly carved out from negative pledge.</div></div>
+<div class="trm"><div class="trn">Cross-Default</div><div class="trd">A default under another obligation also constitutes a default under this facility. Multiplies default risk significantly.</div><div class="tra"><strong>Africa context:</strong> Limit cross-default to significant financial obligations above a meaningful threshold (e.g. &gt;$500K). A missed $10K equipment lease should not trigger default on a $5M facility.</div></div>
+<div class="trm"><div class="trn">Prepayment Premium</div><div class="trd">A fee charged if you repay before scheduled maturity. Compensates the lender for lost interest income. Sometimes called a "make whole" provision.</div><div class="tra"><strong>Africa context:</strong> Negotiate a declining prepayment premium (3% Year 1, 2% Year 2, 1% Year 3, nil thereafter). Preserves the flexibility to refinance at better terms if your creditworthiness improves.</div></div>
+</div>
+</div>
+</div>
+
+<!-- QUIZ -->
+<div class="sec" id="sec-quiz">
+<div class="topbar">Knowledge Quiz</div>
+<div class="hero">
+<div class="hero-ey">Self-Assessment</div>
+<div class="hero-t">Venture Debt <span>Quiz</span></div>
+<div class="hero-b">10 questions covering the key concepts — specific to the African context.</div>
+</div>
+<div class="ca">
+<div id="quiz-wrap">
+<div id="quiz-score-panel" style="display:none;text-align:center;padding:2rem">
+<div class="qs" id="qsv"></div>
+<div style="font-size:14px;color:var(--inmu);margin-top:.5rem" id="qsm"></div>
+<button class="btn" id="quiz-restart" style="margin-top:1.5rem">Retake Quiz</button>
+</div>
+<div id="quiz-area">
+<div style="display:flex;align-items:center;gap:11px;margin-bottom:1.25rem">
+<div class="pb" style="flex:1"><div class="pf" id="qprog" style="width:10%"></div></div>
+<div style="font-size:12.5px;color:var(--inmu)" id="qctr">Question 1 of 10</div>
+</div>
+<div id="quiz-body"></div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- CREDITS -->
+<div class="sec" id="sec-credits">
+<div class="topbar">Credits &amp; Sources</div>
+<div class="hero">
+<div class="hero-ey">Acknowledgements</div>
+<div class="hero-t">Credits &amp; <span>Sources</span></div>
+<div class="hero-b">Built on primary data from Africa's leading ecosystem reports and the practitioner experience of active lenders.</div>
+</div>
+<div class="ca">
+<div class="cd cg2" style="margin-bottom:1.25rem">
+<div class="ct2" style="margin-bottom:.5rem;font-size:14px">Primary Contributors</div>
+<div class="cb"><strong>Newtown Partners — Venture Debt Playbook (2026)</strong><br>Core venture debt mechanics, Moove case study, founder benefits framework and process timeline contributed by the Newtown Partners team.<br>Contact: akash@newtownpartners.com · lesego@newtownpartners.com</div>
+</div>
+<h3 class="sh">Data Sources</h3>
+<div class="cd" style="margin-bottom:1.25rem">
+<a class="rl" href="https://partechpartners.com/africa-reports/" target="_blank">Partech Africa Annual Report 2025 — $1.64B African venture debt deployment data</a>
+<a class="rl" href="https://www.avca.africa/research-publications/" target="_blank">AVCA (African Private Capital Association) — African PE and VC data 2025</a>
+<a class="rl" href="https://www.ifc.org/en/what-we-do/sector-expertise/financial-markets" target="_blank">IFC Performance Standards — ESG and impact framework for DFI-backed deals</a>
+<a class="rl" href="https://www.businessdailyafrica.com/" target="_blank">Business Daily Africa — Kenya market intelligence and Sun King securitisation coverage</a>
+<a class="rl" href="https://techcabal.com" target="_blank">TechCabal — West African startup ecosystem and Wave / Zeepay coverage</a>
+<a class="rl" href="https://disrupt-africa.com" target="_blank">Disrupt Africa — Pan-African startup funding data and deal tracking</a>
+<a class="rl" href="https://untapped.global" target="_blank">Untapped Global — RBF model and Harvard HBS case study (January 2025)</a>
+<a class="rl" href="https://lineacap.com" target="_blank">Linea Capital — Southern African RBF and impact finance model</a>
+</div>
+<h3 class="sh">Produced By</h3>
+<div class="cg">
+<div class="cd ct"><div class="ct2">Digital Collective Africa (DCA)</div><div class="cb" style="margin-top:.4rem">A pan-African network raising standards in governance, investment and entrepreneurship across 54 African markets. With Nathaniel Witbooi, AfricArena and the broader DCA network of contributing organisations.</div></div>
+<div class="cd cg2"><div class="ct2">Methys Venture Studio</div><div class="cb" style="margin-top:.4rem">Producer of the interactive DCA toolkit series, including the DCA Governance Toolkit and DCA Due Diligence Toolkit. Designed and built for Africa's founders and investors.</div></div>
+</div>
+<div class="co ct" style="margin-top:1rem">📘 <strong>Disclaimer:</strong> This toolkit is for educational purposes only and does not constitute legal, financial or investment advice. Always engage qualified legal and financial advisors before entering into any debt facility. Terms and market conditions change — verify current lender criteria and deal terms directly with providers.</div>
+</div>
+</div>
+
+</main>
+
+<script>
+// Section navigation
+const navItems = document.querySelectorAll('.ni');
+navItems.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const id = btn.dataset.sec;
+    document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
+    document.getElementById('sec-' + id).classList.add('active');
+    navItems.forEach(n => n.classList.remove('active'));
+    btn.classList.add('active');
+    window.scrollTo(0,0);
+  });
+});
+
+// Accordion
+function toggleAcc(hdr) {
+  const item = hdr.parentElement;
+  item.classList.toggle('open');
+  const body = item.querySelector('.ab');
+  body.style.display = item.classList.contains('open') ? 'block' : 'none';
+}
+
+// Tab bars
+document.querySelectorAll('.tbr2').forEach(bar => {
+  bar.querySelectorAll('.tbb').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.tab;
+      bar.querySelectorAll('.tbb').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const parent = bar.parentElement;
+      parent.querySelectorAll('.tpn').forEach(p => p.classList.remove('active'));
+      const target = document.getElementById('tab-' + tab);
+      if(target) target.classList.add('active');
+    });
+  });
+});
+
+// Checklist + progress
+const totalItems = document.querySelectorAll('.chl li').length;
+function updateProgress() {
+  const checked = document.querySelectorAll('.chl li.chk').length;
+  document.getElementById('rp').style.width = (checked/totalItems*100) + '%';
+  document.getElementById('rt').textContent = checked + ' / ' + totalItems + ' complete';
+}
+document.querySelectorAll('.chl li').forEach(li => {
+  li.addEventListener('click', () => {
+    li.classList.toggle('chk');
+    updateProgress();
+  });
+});
+
+// Quiz
+const Qs = [
+  {q:"In 2025, what percentage of all African startup capital was debt?",opts:["17%","31%","41%","55%"],ans:2,ex:"41% — up dramatically from 17% in 2019. Debt has become the dominant form of capital in Africa's startup ecosystem."},
+  {q:"What is the minimum ARR most African venture debt lenders require?",opts:["$100K","$250K","$500K","$2M"],ans:2,ex:"$500K ARR is the standard minimum. Below this threshold lenders cannot model cashflows with enough confidence to underwrite a structured debt facility."},
+  {q:"Wave's $137M facility in 2025 was provided by which lender?",opts:["IFC","Lendable","Rand Merchant Bank","NBK Capital Partners"],ans:2,ex:"Rand Merchant Bank (FirstRand Group) provided the $137M facility to Wave — the largest single venture debt transaction in African tech history."},
+  {q:"Which of these is the biggest advantage of Revenue-Based Finance over Venture Debt?",opts:["Lower overall cost","No equity dilution","Larger facility sizes","Longer tenor"],ans:1,ex:"RBF requires zero equity — no warrants, no dilution at all. Venture debt always involves a small equity warrant (typically 15–25% of facility size). RBF is also faster and more flexible in repayment."},
+  {q:"Moove's $10M asset-backed facility enabled what subsequent milestone?",opts:["An IPO","Acquisition by Uber","$76M raise + $100M Series B at $750M valuation","A $30M RBF facility"],ans:2,ex:"After the NBK Capital asset-backed facility, Moove raised $76M (Mubadala + BlackRock), then a $100M Series B led by Uber at a $750M valuation — a perfect illustration of debt unlocking equity at better terms."},
+  {q:"What does a 1.2x capital factor mean in a Revenue-Based Finance deal?",opts:["You pay 1.2% interest per month","You repay 1.2 times the amount advanced","Your revenue must grow 1.2x","The lender takes 1.2% equity"],ans:1,ex:"A 1.2x capital factor means if you receive $500K, you repay $600K in total. There is no traditional interest rate — repayments are a percentage of monthly revenue until the total is reached."},
+  {q:"Which African country saw a 45% decline in venture debt volumes in 2025?",opts:["Nigeria","Kenya","Egypt","South Africa"],ans:3,ex:"South Africa's venture debt volumes fell 45% YoY in 2025 — representing a significant opportunity gap in a market with strong legal infrastructure and established VC ecosystem. DCA directly addresses this."},
+  {q:"What is the 'equity cure' right in a venture debt facility?",opts:["The right to convert debt to equity","The right to inject equity capital to fix a covenant breach","The lender's right to buy equity","The right to prepay without penalty"],ans:1,ex:"An equity cure right allows founders to inject equity capital to fix a financial covenant breach — protecting against technical breaches caused by timing issues (e.g. large customer paying late) rather than actual business deterioration."},
+  {q:"Sun King's $156M securitisation was groundbreaking primarily because:",opts:["It was the largest African deal ever","It was denominated in local currency, eliminating FX risk","It was provided by a DFI","It had zero interest"],ans:1,ex:"Sun King borrowed in Kenyan shillings against KES-denominated customer payment receivables — eliminating FX mismatch risk entirely. This local-currency securitisation approach is now a model for African cleantech financing."},
+  {q:"What is a 'Material Adverse Change' (MAC) clause?",opts:["A clause requiring quarterly financial reporting","A provision allowing the lender to call the loan if a major negative change occurs","A covenant on minimum cash balances","A clause defining the warrant exercise price"],ans:1,ex:"A MAC clause allows the lender to call the loan early if a material adverse change occurs in the company's business or prospects. In Africa, it is critical to limit MAC to company-specific events — not macro or industry-wide events — since African markets experience more frequent macro shocks."}
+];
+
+let cur = 0, score = 0, answered = [];
+
+function renderQ() {
+  const q = Qs[cur];
+  document.getElementById('qprog').style.width = ((cur+1)/10*100) + '%';
+  document.getElementById('qctr').textContent = 'Question ' + (cur+1) + ' of 10';
+  let html = '<div class="qbox"><div class="qt">' + q.q + '</div><div class="qopts">';
+  q.opts.forEach((o,i) => {
+    html += '<div class="qo" data-idx="' + i + '">' + o + '</div>';
+  });
+  html += '</div><div class="qex" id="qex">' + q.ex + '</div></div>';
+  if(cur < 9) html += '<button class="btn" id="qnxt" style="display:none;margin-top:.5rem">Next Question →</button>';
+  else html += '<button class="btn" id="qnxt" style="display:none;margin-top:.5rem">See Results →</button>';
+  document.getElementById('quiz-body').innerHTML = html;
+  document.querySelectorAll('.qo').forEach(opt => {
+    opt.addEventListener('click', () => {
+      if(answered[cur]) return;
+      answered[cur] = true;
+      const idx = parseInt(opt.dataset.idx);
+      document.querySelectorAll('.qo').forEach(o => {
+        const i = parseInt(o.dataset.idx);
+        if(i === q.ans) o.classList.add('correct');
+        else if(i === idx) o.classList.add('wrong');
+        o.style.cursor = 'default';
+      });
+      if(idx === q.ans) score++;
+      document.getElementById('qex').style.display = 'block';
+      document.getElementById('qnxt').style.display = 'inline-flex';
+    });
+  });
+  document.getElementById('qnxt').addEventListener('click', () => {
+    if(cur < 9) { cur++; renderQ(); }
+    else showScore();
+  });
+}
+
+function showScore() {
+  document.getElementById('quiz-area').style.display = 'none';
+  document.getElementById('quiz-score-panel').style.display = 'block';
+  document.getElementById('qsv').textContent = score + ' / 10';
+  const msgs = ['Keep studying — revisit the toolkit sections and try again!','Good foundation — review the sections you missed and aim for 8+.','Strong knowledge — you are ready to have informed conversations with African debt lenders.','Expert level — you understand African venture debt as well as most practitioners.'];
+  document.getElementById('qsm').textContent = score <= 4 ? msgs[0] : score <= 6 ? msgs[1] : score <= 8 ? msgs[2] : msgs[3];
+}
+
+document.getElementById('quiz-restart').addEventListener('click', () => {
+  cur = 0; score = 0; answered = [];
+  document.getElementById('quiz-score-panel').style.display = 'none';
+  document.getElementById('quiz-area').style.display = 'block';
+  renderQ();
+});
+
+renderQ();
+</script>
+</body>
+</html>
